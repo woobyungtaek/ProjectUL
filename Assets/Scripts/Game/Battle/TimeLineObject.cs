@@ -15,7 +15,7 @@ public abstract class TimeLineObject
     private static readonly float StandardTime = 100.0f;
 
     // 현재 스피드
-    private float mSpeed;
+    private float mSpeed = 10;
 
     // 현재 시간
     private float mCurrentTime;
@@ -30,11 +30,15 @@ public abstract class TimeLineObject
         // 시간이 흐른다. Update문에서 실행된다.
         // speed만큼의 속도로 시간이 지난다.
         // 기준 시간 만큼 되면 대기 리스트에 추가된다.
-    }
+        mCurrentTime += (mSpeed * Time.deltaTime *  Time.timeScale);
+        //Debug.Log($"{mCurrentTime}");
 
-    private void IncludeAttackWaitList()
-    {
-        // BattleManager의 대기 리스트에 스스로를 추가 시킨다.
+        if(mCurrentTime > StandardTime)
+        {
+            Debug.Log("대기 리스트에 추가 해야해");
+            BattleManager.Instance.AddTurnWaitObj(this);
+            mCurrentTime = 0;
+        }
     }
 
     private void SetCurrentTime(float time)

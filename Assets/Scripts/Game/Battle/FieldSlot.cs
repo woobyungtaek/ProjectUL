@@ -20,9 +20,14 @@ public class FieldSlot : MonoBehaviour
     // 필드 오브젝트
     [SerializeField]
     private IFieldObject mCurrentFieldObj;
+    public IFieldObject CurrentFieldObj
+    {
+        get { return mCurrentFieldObj; }
+        set { mCurrentFieldObj = value; }
+    }
 
 
-    public void InitSlot(int idx, int row, IFieldObject fieldObj = null)
+    public void InitSlot(int idx, int row)
     {
         if(mSlotImg == null)
         {
@@ -33,8 +38,6 @@ public class FieldSlot : MonoBehaviour
 
         // 현재 idx와 col, row로 게임오브젝트 포지션 설정
         transform.localPosition = new Vector3(idx % row, idx / row, 0);
-
-        mCurrentFieldObj = fieldObj;
     }
 
     public void SelectSlot(int idx)

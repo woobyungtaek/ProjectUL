@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BattleManager : MonoBehaviour
+public class BattleManager : Singleton<BattleManager>
 {
     // 프리팹들
     [SerializeField]
@@ -35,9 +35,14 @@ public class BattleManager : MonoBehaviour
 
 
     #region TestVal
+
+    [SerializeField]
     private int currentSelectSlotIdx = -1;
+
     private void TestInput()
     {
+        if(Input.anyKeyDown == false) { return; }
+
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
             Debug.Log("Test : 0 Slot Select");
@@ -68,15 +73,33 @@ public class BattleManager : MonoBehaviour
             Debug.Log("Test : 5 Slot Select");
             TestSelectSlot(5);
         }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (currentSelectSlotIdx >= 0 && currentSelectSlotIdx < 6)
+            {
+                if(mFieldSlotList[currentSelectSlotIdx].CurrentFieldObj != null) { return; }
+
+                Debug.Log($"Test : {currentSelectSlotIdx}에 Scarecrow 생성");
+                Scarecrow instScarecrow = new Scarecrow();
+                mFieldSlotList[currentSelectSlotIdx].CurrentFieldObj = instScarecrow;
+                mTimeLineObjList.AddLast(instScarecrow);
+            }
+        }
+        else if( Input.GetKeyDown(KeyCode.Escape))
+        {
+            TestSelectSlot(-1);
+        }
     }
 
     private void TestSelectSlot(int idx)
     {
+        currentSelectSlotIdx = idx;
         for (int index = 0; index < mFieldSlotList.Count; ++index)
         {
             mFieldSlotList[index].SelectSlot(idx);
         }
     }
+
     #endregion
 
     private void Start()
@@ -107,7 +130,7 @@ public class BattleManager : MonoBehaviour
         for (int idx = 0; idx < mRow * mCol; ++idx)
         {
             mFieldSlotList.Add(GameObjectPool.Instantiate<FieldSlot>(mFieldSlotPrefab));
-            mFieldSlotList[idx].InitSlot(idx, mRow, new Enemy());
+            mFieldSlotList[idx].InitSlot(idx, mRow);
         }
 
         // 게임 플로우 시작
@@ -131,10 +154,7 @@ public class BattleManager : MonoBehaviour
             // 행동이 모두 완료 될때까지 시간 흐르지 않기
             mFlowFunc = null;
 
-            // 1프레임 쉬고 실행되는 코루틴 실행
-            // (TimeFlowFunc() 가 종료 될 수 있도록)
-            // currentAttackObj의 TurnActionFunc을 실행하여
-            // 객체가 스스로 행동을 할 수 있도록 한다.
+            // currentAttackObj의 TurnActionFunc을 실행
             mCurrentTurnObj.TurnActionFunc();
             return;
         }
@@ -144,5 +164,10 @@ public class BattleManager : MonoBehaviour
         {
             timeLineObj.FlowTime();
         }
+    }
+
+    public void AddTurnWaitObj(TimeLineObject timeObj)
+    {
+        mTurnWaitLList.AddLast(timeObj);
     }
 }
