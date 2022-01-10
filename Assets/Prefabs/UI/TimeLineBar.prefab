@@ -48,6 +48,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8388416481479123279}
+  - component: {fileID: 8388416483000681160}
   m_Layer: 5
   m_Name: TimeLineBar
   m_TagString: Untagged
@@ -75,6 +76,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 500, y: 50}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &8388416483000681160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8388416481479123278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d062a1d573f03eb4b9036cb20bfe269b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  profilePrefab: {fileID: 8327619992796837414, guid: 64ddbee4b7ad2d444bb3d7c5b1841c90,
+    type: 3}
+  mProfileParent: {fileID: 8388416481624283721}
 --- !u!1 &8388416481624283720
 GameObject:
   m_ObjectHideFlags: 0

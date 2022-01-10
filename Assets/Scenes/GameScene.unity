@@ -272,6 +272,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1423637509 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8388416483000681160, guid: 09fb379bc36d85344858e55a73005e40,
+    type: 3}
+  m_PrefabInstance: {fileID: 8388416483000681158}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d062a1d573f03eb4b9036cb20bfe269b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!850595691 &1479728960
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -387,6 +399,7 @@ MonoBehaviour:
   mRow: 3
   mCol: 2
   mFieldSlotList: []
+  mTimeLineBarUI: {fileID: 1423637509}
   currentSelectSlotIdx: -1
 --- !u!1 &1888773420
 GameObject:

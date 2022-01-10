@@ -32,7 +32,9 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField]
     private LinkedList<TimeLineObject> mTurnWaitLList = new LinkedList<TimeLineObject>();
 
-
+    // 타임라인UI
+    [SerializeField]
+    private TimeLineBarUI mTimeLineBarUI;
 
     #region TestVal
 
@@ -166,8 +168,15 @@ public class BattleManager : Singleton<BattleManager>
         }
     }
 
+    // 대기 열에 추가 함수
     public void AddTurnWaitObj(TimeLineObject timeObj)
     {
         mTurnWaitLList.AddLast(timeObj);
+    }
+
+    public void CreateThumbNailUI(TimeLineObject timelineObj)
+    {
+        //번호 입력 받기
+        mTimeLineBarUI.CreateThumbNail(timelineObj);
     }
 }

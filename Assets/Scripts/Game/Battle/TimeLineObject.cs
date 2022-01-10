@@ -11,6 +11,12 @@ using UnityEngine;
 [System.Serializable]
 public abstract class TimeLineObject
 {
+    public TimeLineObject()
+    {
+        // 생성 즉시 BattleManager의 CreateUI 실행
+        BattleManager.Instance.CreateThumbNailUI(this);
+    }
+
     // 기준 시간
     private static readonly float StandardTime = 100.0f;
 
