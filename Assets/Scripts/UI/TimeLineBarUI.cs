@@ -22,6 +22,12 @@ public class TimeLineBarUI : MonoBehaviour
     {
         mWidth = mProfileParent.rect.width;
         mHalfWidth = mWidth / 2.0f;
+
+        // 오브젝트 추가용
+        ObserverCenter.Instance.AddObserver(ExcuteCreateThumbNail, Message.CreateTimeLineObject);
+
+        // 오브젝트 제거용
+        ObserverCenter.Instance.AddObserver(ExcuteRemoveThumbNail, Message.RemoveTimeLineObject);
     }
 
     private void Update()
@@ -37,12 +43,45 @@ public class TimeLineBarUI : MonoBehaviour
         }
     }
 
-    public void CreateThumbNail(TimeLineObject timelineObj)
+    // 추가용 함수
+    public void ExcuteCreateThumbNail(Notification noti)
     {
-        // 생성 후 초기화 한번 해주고
-        // Update문에서 TimeLineThumbNailUI를 갱신 시킨다.
+        TimeLineObjNotiArg args = noti.Data as TimeLineObjNotiArg;
+        if(args == null)
+        {
+            Debug.LogError("args가 없습니다.");
+            return;
+        }
+        
+        // 오브젝트 생성하기
         TimeLineThumbNailUI inst = GameObjectPool.Instantiate<TimeLineThumbNailUI>(profilePrefab, mProfileParent);
-        inst.TimeLineObj = timelineObj;
+        inst.SlotIdx = args.slotIdx;
+        inst.TimeLineObj = args.timelineObj;
+
         mThumbNailLList.AddLast(inst);
+    }
+
+    // 제거용 함수
+    public void ExcuteRemoveThumbNail(Notification noti)
+    {
+        TimeLineObjNotiArg args = noti.Data as TimeLineObjNotiArg;
+        if (args == null)
+        {
+            Debug.LogError("args가 없습니다.");
+            return;
+        }
+
+        foreach(TimeLineThumbNailUI ui in mThumbNailLList)
+        {
+            if(ui.TimeLineObj == args.timelineObj)
+            {
+                // ui 초기화 및 풀로 반환
+                ui.TimeLineObj = null;
+                GameObjectPool.Destroy(ui.gameObject);
+
+                mThumbNailLList.Remove(ui);
+                break;
+            }
+        }
     }
 }

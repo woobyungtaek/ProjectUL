@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public interface IFieldObject
-{
+{    
     // 이동 하기
     void MovePos(int dir);
 

@@ -396,6 +396,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mFieldSlotPrefab: {fileID: 1839287643476996459, guid: 07573570a134c1940b4a997f32296b03,
     type: 3}
+  mFieldGameObjPrefab: {fileID: 8797633511139733169, guid: b6ac5b548d524c84697e7b808d8839e7,
+    type: 3}
   mRow: 3
   mCol: 2
   mFieldSlotList: []

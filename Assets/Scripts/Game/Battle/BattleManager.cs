@@ -7,6 +7,8 @@ public class BattleManager : Singleton<BattleManager>
     // 프리팹들
     [SerializeField]
     private GameObject mFieldSlotPrefab;
+    [SerializeField]
+    private GameObject mFieldGameObjPrefab;
 
     // 행동권을 얻은 객체
     [SerializeField]
@@ -19,6 +21,10 @@ public class BattleManager : Singleton<BattleManager>
     // 필드 슬롯 리스트
     [SerializeField]
     private List<FieldSlot> mFieldSlotList = new List<FieldSlot>();
+
+    // 필드 게임오브젝트 리스트
+    [SerializeField]
+    private LinkedList<GameObject> mFieldGameObjLList = new LinkedList<GameObject>();
 
     // 플로우용 Delegate
     private delegate void FlowFunc();
@@ -82,8 +88,21 @@ public class BattleManager : Singleton<BattleManager>
                 if(mFieldSlotList[currentSelectSlotIdx].CurrentFieldObj != null) { return; }
 
                 Debug.Log($"Test : {currentSelectSlotIdx}에 Scarecrow 생성");
+
+                // 배틀 매니저에 FieldObject를 생성하는 함수가 있고
+                // 이 함수를 호출시 FieldSlotList에 추가
+                // FieldObject가 자동화가 되려면?
+
+
+                // 오브젝트 풀에서 가져와야해서 생성 후 따로 초기화 과정을 거치는게 좋을 듯
+                // 일단 바로 생성하는걸로 해두자. 일반 오브젝트 풀은 좀 다시 볼 필요가 있을 듯
                 Scarecrow instScarecrow = new Scarecrow();
+                instScarecrow.InitTimeLineObject(currentSelectSlotIdx);
+
                 mFieldSlotList[currentSelectSlotIdx].CurrentFieldObj = instScarecrow;
+
+                // 얘는 TimeObject가 따로 호출에서 추가되어야함
+                // 그렇다면 TimeLine관련된건 자동화가 됨
                 mTimeLineObjList.AddLast(instScarecrow);
             }
         }
@@ -172,11 +191,5 @@ public class BattleManager : Singleton<BattleManager>
     public void AddTurnWaitObj(TimeLineObject timeObj)
     {
         mTurnWaitLList.AddLast(timeObj);
-    }
-
-    public void CreateThumbNailUI(TimeLineObject timelineObj)
-    {
-        //번호 입력 받기
-        mTimeLineBarUI.CreateThumbNail(timelineObj);
     }
 }
