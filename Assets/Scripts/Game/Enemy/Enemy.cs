@@ -9,7 +9,25 @@ public class Enemy : TimeLineObject, IFieldObject
 {
     private int mHP;
     private bool mbMove = true;
- 
+
+    public FieldGameObject CurrentFieldGameObject { get; set; }
+
+    public void Init(FieldSlot slot)
+    {
+        mSpeed = Random.Range(3f, 12f);
+
+        // 배당 받은 슬롯이 들어온다.
+        slot.CurrentFieldObj = this;
+
+        // 타임 라인 관련 초기화
+        InitTimeLineObject(slot.FieldIndex);
+
+        // FieldObject는 mySlot위치에 AniObject를 생성시켜야한다.
+        CurrentFieldGameObject = GameObjectPool.Instantiate<FieldGameObject>(BattleManager.Instance.FieldGameObjPrefab);
+        CurrentFieldGameObject.gameObject.transform.position = slot.gameObject.transform.position;
+        CurrentFieldGameObject.PlayAnimationByAniState(EAniState.CreateAni);
+    }
+
     public virtual void MovePos(int dir)
     {
         // 기본값 정의 후에 분별 되는 애들만 재정의 하도록 하자

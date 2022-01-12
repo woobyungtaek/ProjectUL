@@ -9,6 +9,7 @@ public class BattleManager : Singleton<BattleManager>
     private GameObject mFieldSlotPrefab;
     [SerializeField]
     private GameObject mFieldGameObjPrefab;
+    public GameObject FieldGameObjPrefab { get => mFieldGameObjPrefab; }
 
     // 행동권을 얻은 객체
     [SerializeField]
@@ -81,29 +82,27 @@ public class BattleManager : Singleton<BattleManager>
             Debug.Log("Test : 5 Slot Select");
             TestSelectSlot(5);
         }
+        else if(Input.GetKeyDown(KeyCode.Minus))
+        {
+            Time.timeScale -= 0.1f;
+            if(Time.timeScale < 0.0f) { Time.timeScale = 0.0f; }
+        }
+        else if (Input.GetKeyDown(KeyCode.Equals))
+        {
+            Time.timeScale += 0.1f;
+        }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
             if (currentSelectSlotIdx >= 0 && currentSelectSlotIdx < 6)
             {
+                // 해당 필드에 오브젝트가 없을때
                 if(mFieldSlotList[currentSelectSlotIdx].CurrentFieldObj != null) { return; }
 
                 Debug.Log($"Test : {currentSelectSlotIdx}에 Scarecrow 생성");
 
-                // 배틀 매니저에 FieldObject를 생성하는 함수가 있고
-                // 이 함수를 호출시 FieldSlotList에 추가
-                // FieldObject가 자동화가 되려면?
-
-
-                // 오브젝트 풀에서 가져와야해서 생성 후 따로 초기화 과정을 거치는게 좋을 듯
-                // 일단 바로 생성하는걸로 해두자. 일반 오브젝트 풀은 좀 다시 볼 필요가 있을 듯
+                // Enemy는 생성하고 Init하면 TimeLine과 FieldObject가 초기화 된다.
                 Scarecrow instScarecrow = new Scarecrow();
-                instScarecrow.InitTimeLineObject(currentSelectSlotIdx);
-
-                mFieldSlotList[currentSelectSlotIdx].CurrentFieldObj = instScarecrow;
-
-                // 얘는 TimeObject가 따로 호출에서 추가되어야함
-                // 그렇다면 TimeLine관련된건 자동화가 됨
-                mTimeLineObjList.AddLast(instScarecrow);
+                instScarecrow.Init(mFieldSlotList[currentSelectSlotIdx]);
             }
         }
         else if( Input.GetKeyDown(KeyCode.Escape))
@@ -122,6 +121,12 @@ public class BattleManager : Singleton<BattleManager>
     }
 
     #endregion
+    
+    private void Awake()
+    {
+        // 오브젝트 추가용
+        ObserverCenter.Instance.AddObserver(ExcuteAddTimeLineObjectLList, Message.CreateTimeLineObject);
+    }
 
     private void Start()
     {
@@ -191,5 +196,21 @@ public class BattleManager : Singleton<BattleManager>
     public void AddTurnWaitObj(TimeLineObject timeObj)
     {
         mTurnWaitLList.AddLast(timeObj);
+    }
+
+    public void ResumeFlowFunc()
+    {
+        mFlowFunc = TimeFlowFunc;
+    }
+
+    // 옵저버 함수
+    public void ExcuteAddTimeLineObjectLList(Notification noti)
+    {
+        TimeLineObjNotiArg args = noti.Data as TimeLineObjNotiArg;
+        if(args == null)
+        {
+            Debug.LogError("args가 null이다.");
+        }
+        mTimeLineObjList.AddLast(args.timelineObj);
     }
 }

@@ -8,6 +8,7 @@ public class FieldSlot : MonoBehaviour
     // 필드 번호
     [SerializeField]
     private int mFieldIdx = 0;
+    public int FieldIndex { get => mFieldIdx; }
 
     // 슬롯 이미지
     [SerializeField]

@@ -19,5 +19,8 @@ public class Scarecrow : Enemy
         // 허수아비는 띠용하는 애니메이션만하고 아무런 행동을 취하지 않습니다.
         // 0.5초 대기 후 다시 행동이 재시작 되도록 해야합니다.
         Debug.Log("허수아비 행동 함");
+
+        //공격 애니메이션 재생
+        CurrentFieldGameObject.PlayAnimationByAniState(EAniState.AttackAni);
     }
 }

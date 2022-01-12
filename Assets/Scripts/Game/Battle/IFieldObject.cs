@@ -8,7 +8,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public interface IFieldObject
-{    
+{
+    // 반드시 있어야할 객체를 getset으로 구현
+    FieldGameObject CurrentFieldGameObject { get; set; }
+    
     // 이동 하기
     void MovePos(int dir);
 

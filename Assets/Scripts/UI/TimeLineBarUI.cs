@@ -18,16 +18,19 @@ public class TimeLineBarUI : MonoBehaviour
     private float mWidth;
     private float mHalfWidth;
 
-    private void Start()
+    private void Awake()
     {
-        mWidth = mProfileParent.rect.width;
-        mHalfWidth = mWidth / 2.0f;
-
         // 오브젝트 추가용
         ObserverCenter.Instance.AddObserver(ExcuteCreateThumbNail, Message.CreateTimeLineObject);
 
         // 오브젝트 제거용
         ObserverCenter.Instance.AddObserver(ExcuteRemoveThumbNail, Message.RemoveTimeLineObject);
+    }
+
+    private void Start()
+    {
+        mWidth = mProfileParent.rect.width;
+        mHalfWidth = mWidth / 2.0f;
     }
 
     private void Update()

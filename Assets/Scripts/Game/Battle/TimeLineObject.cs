@@ -27,7 +27,7 @@ public abstract class TimeLineObject
     private static readonly float StandardTime = 100.0f;
 
     // 현재 스피드
-    private float mSpeed = 10;
+    protected float mSpeed = 10;
 
     // 현재 시간
     private float mCurrentTime;

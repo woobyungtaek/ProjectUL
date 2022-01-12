@@ -4,8 +4,10 @@ using UnityEngine;
 
 public enum EAniState
 {
+    // 실행할 애니메이션 이름과 동일해야합니다.
     Idle = 0,
-    Create,
+    CreateAni,
+    AttackAni,
     Max
 }
 
@@ -17,10 +19,41 @@ public class FieldGameObject : MonoBehaviour
     [SerializeField]
     private Animator mAnimator;
 
-    public void PlayAnimation(EAniState eAniState)
+    //Static
+    private static Dictionary<string, WaitForSeconds> mWaitSecDict = new Dictionary<string, WaitForSeconds>();
+
+    private void Awake()
     {
-        mAnimator.SetInteger("CurrentState", (int)eAniState);
-        float playSec = mAnimator.GetCurrentAnimatorClipInfo(0).Length;
-        Debug.Log($"{playSec}");
+        if(mWaitSecDict.Count == 0)
+        {
+            // WaitForSeconds객체 만들기
+            RuntimeAnimatorController ac = mAnimator.runtimeAnimatorController;
+            int count = ac.animationClips.Length;
+            for(int idx = 0; idx < count; ++idx)
+            {
+                mWaitSecDict.Add(ac.animationClips[idx].name, new WaitForSeconds(ac.animationClips[idx].length));
+            }
+        }
+    }
+
+    public void PlayAnimationByAniState(EAniState aniState)
+    {
+        mAnimator.SetInteger("CurrentState", (int)aniState);
+
+        if(aniState == EAniState.Idle) { return; }
+
+        // 대기 상태가 아닌 경우만 시간 대기를 한다.
+        Debug.Log($"{aniState.ToString()} 재생");
+        StartCoroutine(DelayChangeAnyState(aniState));
+    }
+
+    IEnumerator DelayChangeAnyState(EAniState aniState)
+    {
+        yield return mWaitSecDict[aniState.ToString()];
+        Debug.Log($"{aniState.ToString()}  끝");
+
+        // Idle로 전환
+        mAnimator.SetInteger("CurrentState", (int)EAniState.Idle);
+        BattleManager.Instance.ResumeFlowFunc();
     }
 }
