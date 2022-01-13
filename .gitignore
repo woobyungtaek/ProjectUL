@@ -1,3 +1,5 @@
 Library/
+Library/Artifacts
 Logs/
 obj/
+obj/Debug
