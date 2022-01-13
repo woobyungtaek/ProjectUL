@@ -127,8 +127,6 @@ D:\UnityProject\ProjectUL\Temp\Bin\Debug\Unity.VSCode.Editor.dll
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.CoreModule.dll
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.dll
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.GraphViewModule.dll
-D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.iOS.Extensions.Common.dll
-D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.iOS.Extensions.Xcode.dll
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.PackageManagerUIModule.dll
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.SceneTemplateModule.dll
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.UI.dll
@@ -276,8 +274,6 @@ D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.UIElementsModule.xml
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.UIElementsSamplesModule.xml
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.UIServiceModule.xml
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.UnityConnectModule.xml
-D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.iOS.Extensions.Xcode.pdb
-D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.iOS.Extensions.Common.pdb
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\Unity.VSCode.Editor.pdb
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\Unity.TextMeshPro.Editor.pdb
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\Unity.VisualStudio.Editor.pdb
@@ -293,8 +289,8 @@ D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEngine.ClusterRendererModule.xml
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEngine.VirtualTexturingModule.xml
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEditor.TestRunner.pdb
 D:\UnityProject\ProjectUL\Temp\Bin\Debug\UnityEngine.TestRunner.pdb
-D:\UnityProject\ProjectUL\obj\Debug\Assembly-CSharp.csproj.AssemblyReference.cache
 D:\UnityProject\ProjectUL\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
 D:\UnityProject\ProjectUL\obj\Debug\Assembly-CSharp.csproj.CopyComplete
 D:\UnityProject\ProjectUL\obj\Debug\Assembly-CSharp.dll
 D:\UnityProject\ProjectUL\obj\Debug\Assembly-CSharp.pdb
+D:\UnityProject\ProjectUL\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache

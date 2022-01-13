@@ -398,6 +398,7 @@ MonoBehaviour:
     type: 3}
   mFieldGameObjPrefab: {fileID: 8797633511139733169, guid: b6ac5b548d524c84697e7b808d8839e7,
     type: 3}
+  mAniCount: 0
   mRow: 3
   mCol: 2
   mFieldSlotList: []

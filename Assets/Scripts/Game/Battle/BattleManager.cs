@@ -15,6 +15,9 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField]
     private TimeLineObject mCurrentTurnObj;
 
+    [SerializeField]
+    private int mAniCount;
+
     // 필드 크기 (갯수)
     [SerializeField]
     private int mRow = 3, mCol = 2;
@@ -198,10 +201,31 @@ public class BattleManager : Singleton<BattleManager>
         mTurnWaitLList.AddLast(timeObj);
     }
 
+    public void IncreaseAniCount()
+    {
+        // 애니메이션 카운트가 증가 합니다.
+        mAniCount++;
+    }
+
+    public void DecreaseAniCount()
+    {
+        // 애니메이션 카운트가 감소 합니다.
+        mAniCount--;
+        if(mAniCount < 0)
+        {
+            Debug.LogError($"애니메이션 카운트 : {mAniCount}");
+            return;
+        }
+    }
+
+
     public void ResumeFlowFunc()
     {
+        if(mAniCount > 0) { return; }
+        if(mFlowFunc != null) { return; }
         mFlowFunc = TimeFlowFunc;
     }
+
 
     // 옵저버 함수
     public void ExcuteAddTimeLineObjectLList(Notification noti)
