@@ -58,7 +58,7 @@ public class TimeLineBarUI : MonoBehaviour
         
         // 오브젝트 생성하기
         TimeLineThumbNailUI inst = GameObjectPool.Instantiate<TimeLineThumbNailUI>(profilePrefab, mProfileParent);
-        inst.SlotIdx = args.slotIdx;
+        inst.SlotStr = args.slotStr;
         inst.TimeLineObj = args.timelineObj;
 
         mThumbNailLList.AddLast(inst);

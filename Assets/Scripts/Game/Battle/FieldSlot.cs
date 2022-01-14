@@ -38,7 +38,7 @@ public class FieldSlot : MonoBehaviour
         mFieldIdx = idx;
 
         // 현재 idx와 col, row로 게임오브젝트 포지션 설정
-        transform.localPosition = new Vector3(idx % row, idx / row, 0);
+        transform.localPosition = new Vector3((idx % row) * 2.5f, 0, (idx / row) * 4.5f);
     }
 
     public void SelectSlot(int idx)

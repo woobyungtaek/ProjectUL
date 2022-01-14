@@ -6,17 +6,17 @@ using UnityEngine.UI;
 public class TimeLineThumbNailUI : MonoBehaviour
 {
     [SerializeField]
-    private int mSlotIdx;
+    private string mSlotStr;
 
-    public int SlotIdx
+    public string SlotStr
     {
-        get { return mSlotIdx; }
+        get { return mSlotStr; }
         set 
         {
-            mSlotIdx = value;
+            mSlotStr = value;
             if(mTextUI != null)
             {
-                mTextUI.text = mSlotIdx.ToString();
+                mTextUI.text = mSlotStr;
             }
         }
     }

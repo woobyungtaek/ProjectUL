@@ -20,10 +20,10 @@ public class Enemy : TimeLineObject, IFieldObject
         slot.CurrentFieldObj = this;
 
         // 타임 라인 관련 초기화
-        InitTimeLineObject(slot.FieldIndex);
+        InitTimeLineObject(slot.FieldIndex.ToString());
 
         // FieldObject는 mySlot위치에 AniObject를 생성시켜야한다.
-        CurrentFieldGameObject = GameObjectPool.Instantiate<FieldGameObject>(BattleManager.Instance.FieldGameObjPrefab);
+        CurrentFieldGameObject = GameObjectPool.Instantiate<FieldGameObject>(BattleManager.Instance.FieldGameObjPrefab, slot.transform.parent);
         CurrentFieldGameObject.gameObject.transform.position = slot.gameObject.transform.position;
         CurrentFieldGameObject.PlayAnimationByAniState(EAniState.CreateAni);
     }

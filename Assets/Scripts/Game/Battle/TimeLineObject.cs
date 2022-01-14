@@ -10,12 +10,12 @@ using UnityEngine;
 
 public class TimeLineObjNotiArg : NotificationArgs //, IReUseObject
 {
-    public int slotIdx;
+    public string slotStr;
     public TimeLineObject timelineObj;
 
     public void ResetObject()
     {
-        slotIdx = 0;
+        slotStr = "";
         timelineObj = null;
     }
 }
@@ -37,10 +37,10 @@ public abstract class TimeLineObject
         get { return mCurrentTime; }
     }
 
-    public void InitTimeLineObject(int idx)
+    public void InitTimeLineObject(string str)
     {
         TimeLineObjNotiArg args = new TimeLineObjNotiArg();//ObjectPool<TimeLineObjNotiArg>.GetInst();
-        args.slotIdx = idx;
+        args.slotStr = str;
         args.timelineObj = this;
 
         // TimeLineUI에 전달되어야하는 Message발생

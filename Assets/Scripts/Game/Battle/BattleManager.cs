@@ -24,11 +24,16 @@ public class BattleManager : Singleton<BattleManager>
 
     // 필드 슬롯 리스트
     [SerializeField]
+    private Transform mFieldsTransform;
+    [SerializeField]
     private List<FieldSlot> mFieldSlotList = new List<FieldSlot>();
 
     // 필드 게임오브젝트 리스트
     [SerializeField]
     private LinkedList<GameObject> mFieldGameObjLList = new LinkedList<GameObject>();
+
+    [SerializeField]
+    private Player mPlayer;
 
     // 플로우용 Delegate
     private delegate void FlowFunc();
@@ -148,6 +153,13 @@ public class BattleManager : Singleton<BattleManager>
     // 전투 초기화
     private void InitBattle()
     {
+        // Player 생성
+        //mPlayer = new Player();
+        //mPlayer.InitTimeLineObject("P");
+
+        // Player GameObject 생성
+
+
         // Field Slot 삭제
         for (int idx = 0; idx < mFieldSlotList.Count; ++idx)
         {
@@ -158,7 +170,7 @@ public class BattleManager : Singleton<BattleManager>
         // Field Slot 생성
         for (int idx = 0; idx < mRow * mCol; ++idx)
         {
-            mFieldSlotList.Add(GameObjectPool.Instantiate<FieldSlot>(mFieldSlotPrefab));
+            mFieldSlotList.Add(GameObjectPool.Instantiate<FieldSlot>(mFieldSlotPrefab, mFieldsTransform));
             mFieldSlotList[idx].InitSlot(idx, mRow);
         }
 
