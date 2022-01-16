@@ -154,8 +154,8 @@ public class BattleManager : Singleton<BattleManager>
     private void InitBattle()
     {
         // Player 생성
-        //mPlayer = new Player();
-        //mPlayer.InitTimeLineObject("P");
+        mPlayer = new Player();
+        mPlayer.InitTimeLineObject("P");
 
         // Player GameObject 생성
 
@@ -177,6 +177,8 @@ public class BattleManager : Singleton<BattleManager>
         // 게임 플로우 시작
         mFlowFunc = TimeFlowFunc;
     }
+
+    #region 대기열 관련
 
     // 대기 함수 
     private void TimeFlowFunc()
@@ -213,6 +215,9 @@ public class BattleManager : Singleton<BattleManager>
         mTurnWaitLList.AddLast(timeObj);
     }
 
+    #endregion
+
+    #region Flow 재개 관련
     public void IncreaseAniCount()
     {
         // 애니메이션 카운트가 증가 합니다.
@@ -230,7 +235,6 @@ public class BattleManager : Singleton<BattleManager>
         }
     }
 
-
     public void ResumeFlowFunc()
     {
         if(mAniCount > 0) { return; }
@@ -238,6 +242,18 @@ public class BattleManager : Singleton<BattleManager>
         mFlowFunc = TimeFlowFunc;
     }
 
+    #endregion
+
+    #region 플레이어 행동 관련
+
+    public void PopupWeaponSelectUI()
+    {
+        // 무기 UI를 표시합니다.
+        // 팝업 UI를 가지고 있고 플레이어의 데이터를 넘겨서 표시한다.
+        // 팝업 UI에서 무기를 선택하면 다시 넘겨 받아서 다음 단계로 넘어가야한다.
+    }
+
+    #endregion
 
     // 옵저버 함수
     public void ExcuteAddTimeLineObjectLList(Notification noti)

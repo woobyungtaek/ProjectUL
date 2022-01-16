@@ -62,18 +62,21 @@
     <Compile Include="Assets\WBTTools\ObserverPattern\Notification.cs" />
     <Compile Include="Assets\Scripts\Game\Battle\FieldSlot.cs" />
     <Compile Include="Assets\WBTTools\GameObjectPool.cs" />
+    <Compile Include="Assets\Scripts\Popup\WeaponSelectPopup.cs" />
     <Compile Include="Assets\Scripts\Game\Battle\IFieldObject.cs" />
     <Compile Include="Assets\Scripts\Game\Enemy\Enemy.cs" />
     <Compile Include="Assets\Scripts\Game\Battle\TimeLineObject.cs" />
     <Compile Include="Assets\WBTTools\ObserverPattern\ObserverCenter.cs" />
     <Compile Include="Assets\Scripts\UI\TimeLineThumbNailUI.cs" />
+    <Compile Include="Assets\Scripts\Popup\Popup.cs" />
     <Compile Include="Assets\Scripts\Game\Enemy\Scarecrow.cs" />
     <Compile Include="Assets\Scripts\Game\Battle\FieldGameObject.cs" />
     <Compile Include="Assets\WBTTools\ObjectPool.cs" />
     <Compile Include="Assets\WBTTools\CurveMatrix.cs" />
+    <Compile Include="Assets\Scripts\Game\Player\Player.cs" />
     <Compile Include="Assets\WBTTools\Utility.cs" />
     <Compile Include="Assets\WBTTools\Singleton.cs" />
-    <Compile Include="Assets\Scripts\Game\Player\Player.cs" />
+    <Compile Include="Assets\Scripts\Game\Player\Weapon.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -291,6 +294,12 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@2.0.0\Runtime\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions.Common">
+      <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\PlaybackEngines\iOSSupport\UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
