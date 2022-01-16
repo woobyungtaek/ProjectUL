@@ -1,5 +1,3 @@
-Library/
-Library/Artifacts
-Logs/
-obj/
-obj/Debug
+Library/**
+Logs/**
+obj/**
