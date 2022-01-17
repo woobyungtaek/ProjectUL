@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethod;
 
 public class BattleManager : Singleton<BattleManager>
 {
@@ -9,6 +10,8 @@ public class BattleManager : Singleton<BattleManager>
     private GameObject mFieldSlotPrefab;
     [SerializeField]
     private GameObject mFieldGameObjPrefab;
+    [SerializeField]
+    private WeaponSelectPopup mWeaponSelectPopup;
     public GameObject FieldGameObjPrefab { get => mFieldGameObjPrefab; }
 
     // 행동권을 얻은 객체
@@ -138,7 +141,6 @@ public class BattleManager : Singleton<BattleManager>
 
     private void Start()
     {
-        InitBattle();
         mFlowFunc = InitBattle;
     }
 
@@ -155,7 +157,7 @@ public class BattleManager : Singleton<BattleManager>
     {
         // Player 생성
         mPlayer = new Player();
-        mPlayer.InitTimeLineObject("P");
+        mPlayer.InitPlayer();
 
         // Player GameObject 생성
 
@@ -251,6 +253,22 @@ public class BattleManager : Singleton<BattleManager>
         // 무기 UI를 표시합니다.
         // 팝업 UI를 가지고 있고 플레이어의 데이터를 넘겨서 표시한다.
         // 팝업 UI에서 무기를 선택하면 다시 넘겨 받아서 다음 단계로 넘어가야한다.
+        if(mWeaponSelectPopup == null) { return; }
+        mWeaponSelectPopup.InitWeaponSelectPopup(mPlayer);
+
+        //if(mFieldSlotList[0].CurrentFieldObj != null)
+        //{
+        //    mFieldSlotList[0].CurrentFieldObj.Hit(3f, Vector3.zero);
+        //}
+        //ResumeFlowFunc();
+    }
+
+    public void SelectWeaponByUI(Weapon weapon)
+    {
+        // Weapon의 정보 대로 값을 보여준다.
+        
+        // 먼저 필드 오브젝트에서 선택 가능한 녀석들을 파란색 바닥으로 표시해주자
+        // 또한 몬스터 Select 상태로 넘어가야한다.
     }
 
     #endregion

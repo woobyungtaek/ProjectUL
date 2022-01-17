@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethod;
 
 // 적은 무조건 타임라인에서 행동 하며
 // 필드에 올라와 있어야 한다.
@@ -22,10 +23,8 @@ public class Enemy : TimeLineObject, IFieldObject
         // 타임 라인 관련 초기화
         InitTimeLineObject(slot.FieldIndex.ToString());
 
-        // FieldObject는 mySlot위치에 AniObject를 생성시켜야한다.
-        CurrentFieldGameObject = GameObjectPool.Instantiate<FieldGameObject>(BattleManager.Instance.FieldGameObjPrefab, slot.transform.parent);
-        CurrentFieldGameObject.gameObject.transform.position = slot.gameObject.transform.position;
-        CurrentFieldGameObject.PlayAnimationByAniState(EAniState.CreateAni);
+        //FieldObject 초기화
+        this.InitFieldObject(slot);
     }
 
     public virtual void MovePos(int dir)

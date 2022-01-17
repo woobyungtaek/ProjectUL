@@ -8,6 +8,7 @@ public enum EAniState
     Idle = 0,
     CreateAni,
     AttackAni,
+    HitAni,
     Max
 }
 

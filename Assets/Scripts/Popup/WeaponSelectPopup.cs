@@ -20,5 +20,13 @@ public class WeaponSelectPopup : Popup
     {
         // 플레이어가 가지고 있는 무기 리스트를 가지고
         // WeaponButton을 생성한다.
+        List<Weapon> weaponList = player.WeaponList;
+
+        foreach(Weapon weapon in weaponList)
+        {
+            GameObjectPool.Instantiate(mWeaponButtonPrefab, mButtonTransform);
+        }
+
+        gameObject.SetActive(true);
     }
 }
