@@ -23,13 +23,13 @@ public class BattleManager : Singleton<BattleManager>
 
     // 필드 크기 (갯수)
     [SerializeField]
-    private int mRow = 3, mCol = 2;
+    private readonly int mX = 3, mY = 2;
 
     // 필드 슬롯 리스트
     [SerializeField]
     private Transform mFieldsTransform;
     [SerializeField]
-    private List<FieldSlot> mFieldSlotList = new List<FieldSlot>();
+    private List<List<FieldSlot>> mFieldSlotList = new List<List<FieldSlot>>();
 
     // 필드 게임오브젝트 리스트
     [SerializeField]
@@ -37,6 +37,8 @@ public class BattleManager : Singleton<BattleManager>
 
     [SerializeField]
     private Player mPlayer;
+    [SerializeField]
+    private Weapon mSelectWeapon;
 
     // 플로우용 Delegate
     private delegate void FlowFunc();
@@ -57,7 +59,7 @@ public class BattleManager : Singleton<BattleManager>
     #region TestVal
 
     [SerializeField]
-    private int currentSelectSlotIdx = -1;
+    private Vector2Int mSelectCoordi = new Vector2Int(-1, -1);
 
     private void TestInput()
     {
@@ -104,16 +106,17 @@ public class BattleManager : Singleton<BattleManager>
         }
         else if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (currentSelectSlotIdx >= 0 && currentSelectSlotIdx < 6)
+            int num = (mSelectCoordi.y * mX) +mSelectCoordi.x;
+            if (num >= 0 && num < mX * mY)
             {
                 // 해당 필드에 오브젝트가 없을때
-                if(mFieldSlotList[currentSelectSlotIdx].CurrentFieldObj != null) { return; }
+                if(mFieldSlotList[mSelectCoordi.x][mSelectCoordi.y].CurrentFieldObj != null) { return; }
 
-                Debug.Log($"Test : {currentSelectSlotIdx}에 Scarecrow 생성");
+                Debug.Log($"Test : {mSelectCoordi}에 Scarecrow 생성");
 
                 // Enemy는 생성하고 Init하면 TimeLine과 FieldObject가 초기화 된다.
                 Scarecrow instScarecrow = new Scarecrow();
-                instScarecrow.Init(mFieldSlotList[currentSelectSlotIdx]);
+                instScarecrow.Init(mFieldSlotList[mSelectCoordi.x][mSelectCoordi.y]);
             }
         }
         else if( Input.GetKeyDown(KeyCode.Escape))
@@ -124,10 +127,14 @@ public class BattleManager : Singleton<BattleManager>
 
     private void TestSelectSlot(int idx)
     {
-        currentSelectSlotIdx = idx;
-        for (int index = 0; index < mFieldSlotList.Count; ++index)
+        mSelectCoordi = new Vector2Int(idx % mX, idx / mX);
+
+        foreach(List<FieldSlot> fieldSlots in mFieldSlotList)
         {
-            mFieldSlotList[index].SelectSlot(idx);
+            foreach (FieldSlot slot in fieldSlots)
+            {
+                slot.SelectSlot(mSelectCoordi);
+            }
         }
     }
 
@@ -163,17 +170,25 @@ public class BattleManager : Singleton<BattleManager>
 
 
         // Field Slot 삭제
-        for (int idx = 0; idx < mFieldSlotList.Count; ++idx)
+        foreach(List<FieldSlot> fieldSlots in mFieldSlotList)
         {
-            GameObjectPool.Destroy(mFieldSlotList[idx].gameObject);
+            foreach(FieldSlot slot in fieldSlots)
+            {
+                GameObjectPool.Destroy(slot.gameObject);
+            }
+            fieldSlots.Clear();
         }
         mFieldSlotList.Clear();
 
         // Field Slot 생성
-        for (int idx = 0; idx < mRow * mCol; ++idx)
+        for (int x = 0; x < mX; ++x)
         {
-            mFieldSlotList.Add(GameObjectPool.Instantiate<FieldSlot>(mFieldSlotPrefab, mFieldsTransform));
-            mFieldSlotList[idx].InitSlot(idx, mRow);
+            mFieldSlotList.Add(new List<FieldSlot>());
+            for (int y = 0; y < mY; ++y)
+            {
+                mFieldSlotList[x].Add(GameObjectPool.Instantiate<FieldSlot>(mFieldSlotPrefab, mFieldsTransform));
+                mFieldSlotList[x][y].InitSlot(new Vector2Int(x, y));
+            }
         }
 
         // 게임 플로우 시작
@@ -266,7 +281,8 @@ public class BattleManager : Singleton<BattleManager>
     public void SelectWeaponByUI(Weapon weapon)
     {
         // Weapon의 정보 대로 값을 보여준다.
-        
+        mSelectWeapon = weapon;
+
         // 먼저 필드 오브젝트에서 선택 가능한 녀석들을 파란색 바닥으로 표시해주자
         // 또한 몬스터 Select 상태로 넘어가야한다.
     }

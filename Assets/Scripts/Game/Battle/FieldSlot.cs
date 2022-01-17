@@ -7,8 +7,8 @@ public class FieldSlot : MonoBehaviour
 {
     // 필드 번호
     [SerializeField]
-    private int mFieldIdx = 0;
-    public int FieldIndex { get => mFieldIdx; }
+    private Vector2Int mFieldCoordi = new Vector2Int(-1, -1);
+    public Vector2Int FieldCoordi { get => mFieldCoordi; }
 
     // 슬롯 이미지
     [SerializeField]
@@ -28,22 +28,22 @@ public class FieldSlot : MonoBehaviour
     }
 
 
-    public void InitSlot(int idx, int row)
+    public void InitSlot(Vector2Int coordi)
     {
         if(mSlotImg == null)
         {
             mSlotImg = GetComponent<SpriteRenderer>();
         }
 
-        mFieldIdx = idx;
+        mFieldCoordi = coordi;
 
         // 현재 idx와 col, row로 게임오브젝트 포지션 설정
-        transform.localPosition = new Vector3((idx % row) * 2.5f, 0, (idx / row) * 4.5f);
+        transform.localPosition = new Vector3(coordi.x * 2.5f, 0, coordi.y * 4.5f);
     }
 
-    public void SelectSlot(int idx)
+    public void SelectSlot(Vector2Int coordi)
     {
-        if(mFieldIdx != idx)
+        if(mFieldCoordi != coordi)
         {
             // White로 변경
             mSlotImg.color = Color.white;

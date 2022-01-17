@@ -21,7 +21,7 @@ public class Enemy : TimeLineObject, IFieldObject
         slot.CurrentFieldObj = this;
 
         // 타임 라인 관련 초기화
-        InitTimeLineObject(slot.FieldIndex.ToString());
+        InitTimeLineObject(slot.FieldCoordi.ToString());
 
         //FieldObject 초기화
         this.InitFieldObject(slot);

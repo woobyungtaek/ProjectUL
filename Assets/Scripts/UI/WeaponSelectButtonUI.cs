@@ -21,7 +21,7 @@ public class WeaponSelectButtonUI : MonoBehaviour
 
     public void OnButtonClicked()
     {
-        Debug.Log("ㅋㅋㅋ");
+        Debug.Log("무기선택");
         BattleManager.Instance.SelectWeaponByUI(mCurrentWeapon);
     }
 }

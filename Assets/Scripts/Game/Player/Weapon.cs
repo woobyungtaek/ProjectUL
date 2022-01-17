@@ -9,15 +9,13 @@ static한 곳에서 함수와 프리팹, 이미지 등을 새로 셋팅 한다.
 
  */
 
-public class Weapon : MonoBehaviour
+public class Weapon
 {
     private float mPower;
     private Vector3 mHitDir = Vector3.zero;
 
     // 공격 가능한 좌표 리스트
     // 공격시 타겟 리스트
-    // 일단 랜덤으로 생성하게 해서 갑 적용되도록하자
-
 
     public float Power
     {
