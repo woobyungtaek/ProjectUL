@@ -283,8 +283,22 @@ public class BattleManager : Singleton<BattleManager>
         // Weapon의 정보 대로 값을 보여준다.
         mSelectWeapon = weapon;
 
+        // Weapon이 설정 되면 그에 맞는 상태로 표시를 해줘야함
+        // 먼저 모든 슬롯의 상태를 초기상태로 바꾸고
+        // weapon에서 TargetList를 가져와서 적용대상 슬롯 리스트를 만들고
+        // 해당 리스트의 슬롯들을 처리해주쟈
+
         // 먼저 필드 오브젝트에서 선택 가능한 녀석들을 파란색 바닥으로 표시해주자
         // 또한 몬스터 Select 상태로 넘어가야한다.
+    }
+
+    #endregion
+
+    #region FieldSlot관련
+
+    private void AddTargetSlotList(ref List<FieldSlot> fieldSlots, Vector3Int data)
+    {
+
     }
 
     #endregion

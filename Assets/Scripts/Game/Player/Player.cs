@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Player : TimeLineObject
 {
+    [SerializeField]
     private List<Weapon> mWeaponList = new List<Weapon>();
 
     public List<Weapon> WeaponList
@@ -16,10 +18,13 @@ public class Player : TimeLineObject
         InitTimeLineObject("P");
 
         mWeaponList.Clear();
-        for(int cnt = 0; cnt < 10; ++cnt)
+        for(int cnt = 0; cnt < 4; ++cnt)
         {
             // ObjectPool로 부터 가져와야함
-            mWeaponList.Add(new Weapon());
+            WeaponData data = DataManager.Instance.GetWeaponDataByName($"Weapon_{cnt}");
+            Weapon weapon = new Weapon(data);
+
+            mWeaponList.Add(weapon);
         }
     }
 

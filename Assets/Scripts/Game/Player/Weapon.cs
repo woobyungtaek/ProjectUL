@@ -9,22 +9,17 @@ static한 곳에서 함수와 프리팹, 이미지 등을 새로 셋팅 한다.
 
  */
 
+[System.Serializable]
 public class Weapon
 {
-    private float mPower;
-    private Vector3 mHitDir = Vector3.zero;
-
-    // 공격 가능한 좌표 리스트
-    // 공격시 타겟 리스트
-
-    public float Power
+    public Weapon(WeaponData data)
     {
-        get { return mPower; }
+        mWeaponData = data;
     }
-    public Vector3 HitDir
-    {
-        get { return mHitDir; }
-    }
+
+    [SerializeField]
+    // 무기 데이터
+    private WeaponData mWeaponData;
 
     public delegate void WeaponFunc(Weapon weapon, FieldSlot fieldSlot);
 
