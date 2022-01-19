@@ -17,6 +17,8 @@ public class WeaponSelectButtonUI : MonoBehaviour
 
         // ButtonText를 Weapon의 이름으로 바꾸기
         // mButtonText.text = "";
+
+
     }
 
     public void OnButtonClicked()

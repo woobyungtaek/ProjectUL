@@ -20,6 +20,10 @@ public class Weapon
     [SerializeField]
     // 무기 데이터
     private WeaponData mWeaponData;
+    public WeaponData CurWeaponData
+    {
+        get { return mWeaponData; }
+    }
 
     public delegate void WeaponFunc(Weapon weapon, FieldSlot fieldSlot);
 

@@ -54,6 +54,14 @@ public class FieldSlot : MonoBehaviour
         mSlotImg.color = Color.red;
     }
 
+    public void ChangeSlotState_Reset()
+    {
+        // 표시 색 변경
+        mSlotImg.color = Color.white;
+
+        // 선택용 콜라이더박스 Off
+    }
+
     // 선택 가능한 상태로 변경
     public void ChangeSlotState_PossibleSelect()
     {

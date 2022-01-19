@@ -24,7 +24,8 @@ public class WeaponSelectPopup : Popup
 
         foreach(Weapon weapon in weaponList)
         {
-            GameObjectPool.Instantiate(mWeaponButtonPrefab, mButtonTransform);
+            WeaponSelectButtonUI inst = GameObjectPool.Instantiate<WeaponSelectButtonUI>(mWeaponButtonPrefab, mButtonTransform);
+            inst.InitButtonUI(weapon);
         }
 
         gameObject.SetActive(true);

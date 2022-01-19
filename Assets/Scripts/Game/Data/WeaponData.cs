@@ -37,6 +37,21 @@ __z값_______________________________________________z값_________________________
 9. 장판의 경우 스킬에 따라 달라지며 직접 공격한 영역에 적용된다.
  */
 
+public enum ETargetSelectType
+{
+    Point = 0,
+    All,
+    Hor,
+    Ver,
+    RUp,
+    LUp,
+    Odd,
+    Even,
+    OnlyStruct,
+    OnlyEnemy,
+    OnlyEmpty
+}
+
 [System.Serializable]
 public struct WeaponData
 {

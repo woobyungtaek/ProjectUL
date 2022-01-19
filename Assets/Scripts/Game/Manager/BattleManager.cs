@@ -30,10 +30,13 @@ public class BattleManager : Singleton<BattleManager>
     private Transform mFieldsTransform;
     [SerializeField]
     private List<List<FieldSlot>> mFieldSlotList = new List<List<FieldSlot>>();
+    [SerializeField]
+    private List<FieldSlot> mTargetFieldSlotList = new List<FieldSlot>();
 
     // 필드 게임오브젝트 리스트
     [SerializeField]
     private LinkedList<GameObject> mFieldGameObjLList = new LinkedList<GameObject>();
+
 
     [SerializeField]
     private Player mPlayer;
@@ -280,18 +283,113 @@ public class BattleManager : Singleton<BattleManager>
 
     public void SelectWeaponByUI(Weapon weapon)
     {
+        // 공격 가능 슬롯 초기화
+        mTargetFieldSlotList.Clear();
+
+        foreach(var slots in mFieldSlotList)
+        {
+            foreach(var slot in slots)
+            {
+                slot.ChangeSlotState_Reset();
+            }
+        }
+
         // Weapon의 정보 대로 값을 보여준다.
         mSelectWeapon = weapon;
 
+        // 선택 가능한 slotList 만들기
+        var list = mSelectWeapon.CurWeaponData.TargetCoordiList;
+        foreach(var coordi in list)
+        {
+            AddTargetList(coordi);
+        }
+
+        // 슬롯 상태 변경
+        foreach(var slot in mTargetFieldSlotList)
+        {
+            slot.ChangeSlotState_PossibleSelect();
+        }
         // Weapon이 설정 되면 그에 맞는 상태로 표시를 해줘야함
         // 먼저 모든 슬롯의 상태를 초기상태로 바꾸고
         // weapon에서 TargetList를 가져와서 적용대상 슬롯 리스트를 만들고
         // 해당 리스트의 슬롯들을 처리해주쟈
 
         // 먼저 필드 오브젝트에서 선택 가능한 녀석들을 파란색 바닥으로 표시해주자
-        // 또한 몬스터 Select 상태로 넘어가야한다.
+        // 또한 몬스터 Select 상태로 넘어가야한다.         
     }
 
+    private void AddTargetList(Vector3Int area)
+    {
+        //일단 z값 읽어서 속성
+        ETargetSelectType selectType = (ETargetSelectType)area.z;
+
+        int x = area.x;
+        int y = area.y;
+
+        switch(selectType)
+        {
+            case ETargetSelectType.Point:
+                {
+                    // x, y 좌표가 있는지 확인 후
+                    if( x < 0 || y < 0 || x >= mX || y >= mY) { break; }
+                    mTargetFieldSlotList.Add(mFieldSlotList[x][y]);
+                }
+                break;
+            case ETargetSelectType.All:
+                {
+                    foreach(List<FieldSlot> slots in mFieldSlotList)
+                    {
+                        mTargetFieldSlotList.AddRange(slots);
+                    }
+                }
+                break;
+            case ETargetSelectType.Hor:
+                {
+
+                }
+                break;
+            case ETargetSelectType.Ver:
+                {
+
+                }
+                break;
+            case ETargetSelectType.RUp:
+                {
+
+                }
+                break;
+            case ETargetSelectType.LUp:
+                {
+
+                }
+                break;
+            case ETargetSelectType.Odd:
+                {
+
+                }
+                break;
+            case ETargetSelectType.Even:
+                {
+
+                }
+                break;
+            case ETargetSelectType.OnlyStruct:
+                {
+
+                }
+                break;
+            case ETargetSelectType.OnlyEnemy:
+                {
+
+                }
+                break;
+            case ETargetSelectType.OnlyEmpty:
+                {
+
+                }
+                break;
+        }
+    }
     #endregion
 
     #region FieldSlot관련
