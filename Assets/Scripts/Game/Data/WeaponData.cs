@@ -41,15 +41,10 @@ public enum ETargetSelectType
 {
     Point = 0,
     All,
-    Hor,
-    Ver,
-    RUp,
-    LUp,
-    Odd,
-    Even,
-    OnlyStruct,
-    OnlyEnemy,
-    OnlyEmpty
+    Hor,        Ver,
+    RightUp,    LeftUp,
+    Odd,        Even,
+    OnlyStruct, OnlyEnemy, OnlyEmpty
 }
 
 [System.Serializable]

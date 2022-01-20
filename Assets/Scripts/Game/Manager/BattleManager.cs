@@ -25,6 +25,18 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField]
     private readonly int mX = 3, mY = 2;
 
+    private readonly Vector2Int[] mNearCoordiArr
+        = new Vector2Int[] {
+            Vector2Int.up,
+            new Vector2Int(1,1),
+            Vector2Int.right,
+            new Vector2Int(1,-1),
+            Vector2Int.down,
+            new Vector2Int(-1,-1),
+            Vector2Int.left,
+            new Vector2Int(-1,1)
+        };
+
     // 필드 슬롯 리스트
     [SerializeField]
     private Transform mFieldsTransform;
@@ -171,7 +183,6 @@ public class BattleManager : Singleton<BattleManager>
 
         // Player GameObject 생성
 
-
         // Field Slot 삭제
         foreach(List<FieldSlot> fieldSlots in mFieldSlotList)
         {
@@ -191,6 +202,29 @@ public class BattleManager : Singleton<BattleManager>
             {
                 mFieldSlotList[x].Add(GameObjectPool.Instantiate<FieldSlot>(mFieldSlotPrefab, mFieldsTransform));
                 mFieldSlotList[x][y].InitSlot(new Vector2Int(x, y));
+            }
+        }
+
+        // 인접 슬롯 설정
+        for (int x = 0; x < mX; ++x)
+        {
+            for (int y = 0; y < mY; ++y)
+            {
+                for(int dir = 0; dir < 8; ++dir)
+                {
+                    int rX = x + mNearCoordiArr[dir].x;
+                    int rY = y + mNearCoordiArr[dir].y;
+
+                    // 범위에 없는 경우
+                    if(rX <0 || rX >= mX ||rY < 0|| rY>= mY)
+                    {
+                        mFieldSlotList[x][y].SetNearSlot(dir, null);
+                        continue;
+                    }
+
+                    // 범위에 있는 경우
+                    mFieldSlotList[x][y].SetNearSlot(dir, mFieldSlotList[rX][rY]);
+                }
             }
         }
 
@@ -357,24 +391,44 @@ public class BattleManager : Singleton<BattleManager>
                     mTargetFieldSlotList.AddRange(mFieldSlotList[x]);
                 }
                 break;
-            case ETargetSelectType.RUp:
+            case ETargetSelectType.RightUp:
                 {
                     // 일단 해당 좌표 추가
                     mTargetFieldSlotList.Add(mFieldSlotList[x][y]);
 
-                    // 얘는 이제 올라가고 내려가면서 찾아야함
-                    // 우상(1,1), 좌하(-1,-1)
-                    int idxX = x;
-                    int idxY = y;
-                    while(idxX < 0 || idxX >= mX || idxY < 0 || idxY >= mY)
+                    FieldSlot inst = mFieldSlotList[x][y].RightUp;
+                    while(inst != null)
                     {
+                        mTargetFieldSlotList.Add(inst);
+                        inst = inst.RightUp;
+                    }
 
-                    }                    
+                    inst = mFieldSlotList[x][y].LeftDown;
+                    while(inst != null)
+                    {
+                        mTargetFieldSlotList.Add(inst);
+                        inst = inst.LeftDown;
+                    }
                 }
                 break;
-            case ETargetSelectType.LUp:
+            case ETargetSelectType.LeftUp:
                 {
-                    // 좌상(-1, 1), 우하(1, -1)
+                    // 일단 해당 좌표 추가
+                    mTargetFieldSlotList.Add(mFieldSlotList[x][y]);
+
+                    FieldSlot inst = mFieldSlotList[x][y].LeftUp;
+                    while (inst != null)
+                    {
+                        mTargetFieldSlotList.Add(inst);
+                        inst = inst.LeftUp;
+                    }
+
+                    inst = mFieldSlotList[x][y].RightDown;
+                    while (inst != null)
+                    {
+                        mTargetFieldSlotList.Add(inst);
+                        inst = inst.RightDown;
+                    }
                 }
                 break;
             case ETargetSelectType.Odd:
@@ -408,12 +462,30 @@ public class BattleManager : Singleton<BattleManager>
                 break;
             case ETargetSelectType.OnlyEnemy:
                 {
+                    foreach(List<FieldSlot> slotList in mFieldSlotList)
+                    {
+                        foreach(FieldSlot slot in slotList)
+                        {
+                            if(slot.CurrentFieldObj == null) { continue; }
+                            
+                            Enemy enemy = slot.CurrentFieldObj as Enemy;
+                            if(enemy == null) { continue; }
 
+                            mTargetFieldSlotList.Add(slot);
+                        }
+                    }
                 }
                 break;
             case ETargetSelectType.OnlyEmpty:
                 {
-
+                    foreach (List<FieldSlot> slotList in mFieldSlotList)
+                    {
+                        foreach (FieldSlot slot in slotList)
+                        {
+                            if (slot.CurrentFieldObj != null) { continue; }
+                            mTargetFieldSlotList.Add(slot);
+                        }
+                    }
                 }
                 break;
         }
@@ -422,10 +494,6 @@ public class BattleManager : Singleton<BattleManager>
 
     #region FieldSlot관련
 
-    private void AddTargetSlotList(ref List<FieldSlot> fieldSlots, Vector3Int data)
-    {
-
-    }
 
     #endregion
 

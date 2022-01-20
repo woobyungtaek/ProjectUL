@@ -10,6 +10,29 @@ public class FieldSlot : MonoBehaviour
     private Vector2Int mFieldCoordi = new Vector2Int(-1, -1);
     public Vector2Int FieldCoordi { get => mFieldCoordi; }
 
+    // (0, up)부터 시계방향으로 순서대로
+    [SerializeField]
+    private FieldSlot[] mNearSlot = new FieldSlot[8];
+    
+    // 인접 슬롯 설정
+    public void SetNearSlot(int dir, FieldSlot slot)
+    {
+        mNearSlot[dir] = slot;
+    }
+
+    #region 인접 슬롯 얻기
+
+    public FieldSlot Up         { get => mNearSlot[0]; }
+    public FieldSlot RightUp    { get => mNearSlot[1]; }
+    public FieldSlot Right      { get => mNearSlot[2]; }
+    public FieldSlot RightDown  { get => mNearSlot[3]; }
+    public FieldSlot Down       { get => mNearSlot[4]; }
+    public FieldSlot LeftDown   { get => mNearSlot[5]; }
+    public FieldSlot Left       { get => mNearSlot[6]; }
+    public FieldSlot LeftUp     { get => mNearSlot[7]; }
+
+    #endregion
+
     // 슬롯 이미지
     [SerializeField]
     private SpriteRenderer mSlotImg;
@@ -30,7 +53,7 @@ public class FieldSlot : MonoBehaviour
 
     public void InitSlot(Vector2Int coordi)
     {
-        if(mSlotImg == null)
+        if (mSlotImg == null)
         {
             mSlotImg = GetComponent<SpriteRenderer>();
         }
@@ -43,7 +66,7 @@ public class FieldSlot : MonoBehaviour
 
     public void SelectSlot(Vector2Int coordi)
     {
-        if(mFieldCoordi != coordi)
+        if (mFieldCoordi != coordi)
         {
             // White로 변경
             mSlotImg.color = Color.white;
