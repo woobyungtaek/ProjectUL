@@ -345,37 +345,65 @@ public class BattleManager : Singleton<BattleManager>
                 break;
             case ETargetSelectType.Hor:
                 {
-
+                    // x, y 좌표있고 y값이 고정이 되어야함
+                    foreach (List<FieldSlot> slots in mFieldSlotList)
+                    {
+                        mTargetFieldSlotList.Add(slots[y]);
+                    }
                 }
                 break;
             case ETargetSelectType.Ver:
                 {
-
+                    mTargetFieldSlotList.AddRange(mFieldSlotList[x]);
                 }
                 break;
             case ETargetSelectType.RUp:
                 {
+                    // 일단 해당 좌표 추가
+                    mTargetFieldSlotList.Add(mFieldSlotList[x][y]);
 
+                    // 얘는 이제 올라가고 내려가면서 찾아야함
+                    // 우상(1,1), 좌하(-1,-1)
+                    int idxX = x;
+                    int idxY = y;
+                    while(idxX < 0 || idxX >= mX || idxY < 0 || idxY >= mY)
+                    {
+
+                    }                    
                 }
                 break;
             case ETargetSelectType.LUp:
                 {
-
+                    // 좌상(-1, 1), 우하(1, -1)
                 }
                 break;
             case ETargetSelectType.Odd:
                 {
-
+                    for(int idxX = 0; idxX < mX; ++idxX)
+                    {
+                        for (int idxY = 0; idxY < mY; ++idxY)
+                        {
+                            if( (idxX+idxY) % 2 == 0 ) { continue; }
+                            mTargetFieldSlotList.Add(mFieldSlotList[idxX][idxY]);
+                        }
+                    }
                 }
                 break;
             case ETargetSelectType.Even:
                 {
-
+                    for (int idxX = 0; idxX < mX; ++idxX)
+                    {
+                        for (int idxY = 0; idxY < mY; ++idxY)
+                        {
+                            if ((idxX + idxY) % 2 != 0) { continue; }
+                            mTargetFieldSlotList.Add(mFieldSlotList[idxX][idxY]);
+                        }
+                    }
                 }
                 break;
             case ETargetSelectType.OnlyStruct:
                 {
-
+                    // 추후 구현
                 }
                 break;
             case ETargetSelectType.OnlyEnemy:
