@@ -18,7 +18,7 @@ public class Player : TimeLineObject
         InitTimeLineObject("P");
 
         mWeaponList.Clear();
-        for(int cnt = 0; cnt < 4; ++cnt)
+        for(int cnt = 0; cnt < 11; ++cnt)
         {
             // ObjectPool로 부터 가져와야함
             WeaponData data = DataManager.Instance.GetWeaponDataByName($"Weapon_{cnt}");

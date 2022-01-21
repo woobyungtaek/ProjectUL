@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using ExtensionMethod;
+
 
 public class BattleManager : Singleton<BattleManager>
 {
@@ -23,7 +25,7 @@ public class BattleManager : Singleton<BattleManager>
 
     // 필드 크기 (갯수)
     [SerializeField]
-    private readonly int mX = 3, mY = 2;
+    private readonly int mX = 5, mY = 5;
 
     private readonly Vector2Int[] mNearCoordiArr
         = new Vector2Int[] {
@@ -54,6 +56,8 @@ public class BattleManager : Singleton<BattleManager>
     private Player mPlayer;
     [SerializeField]
     private Weapon mSelectWeapon;
+    [SerializeField]
+    private FieldSlot mSelectSlot;
 
     // 플로우용 Delegate
     private delegate void FlowFunc();
@@ -317,6 +321,8 @@ public class BattleManager : Singleton<BattleManager>
 
     public void SelectWeaponByUI(Weapon weapon)
     {
+        if(mSelectWeapon == weapon) { return; }
+
         // 공격 가능 슬롯 초기화
         mTargetFieldSlotList.Clear();
 
@@ -338,18 +344,14 @@ public class BattleManager : Singleton<BattleManager>
             AddTargetList(coordi);
         }
 
-        // 슬롯 상태 변경
-        foreach(var slot in mTargetFieldSlotList)
+        // 중복제거 (Linq)
+        mTargetFieldSlotList = mTargetFieldSlotList.Distinct().ToList();
+
+        // 슬롯 상태 변경 (Select 가능하게)
+        foreach (var slot in mTargetFieldSlotList)
         {
             slot.ChangeSlotState_PossibleSelect();
         }
-        // Weapon이 설정 되면 그에 맞는 상태로 표시를 해줘야함
-        // 먼저 모든 슬롯의 상태를 초기상태로 바꾸고
-        // weapon에서 TargetList를 가져와서 적용대상 슬롯 리스트를 만들고
-        // 해당 리스트의 슬롯들을 처리해주쟈
-
-        // 먼저 필드 오브젝트에서 선택 가능한 녀석들을 파란색 바닥으로 표시해주자
-        // 또한 몬스터 Select 상태로 넘어가야한다.         
     }
 
     private void AddTargetList(Vector3Int area)
@@ -490,6 +492,7 @@ public class BattleManager : Singleton<BattleManager>
                 break;
         }
     }
+
     #endregion
 
     #region FieldSlot관련
