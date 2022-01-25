@@ -33,7 +33,7 @@ public class Player : TimeLineObject
         // 상태 이상 실행
         // 살아 남은 경우 아래 실행
 
-        // 굳이 배틀 매니저를 들렸다 갈 필요가 없네
-        BattleManager.Instance.PopupWeaponSelectUI();
+        // 배틀 매니저가 일괄처리
+        BattleManager.Instance.OnWeaponSelectUI();
     }
 }

@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1072134846889468043}
   - component: {fileID: 6247765700771662617}
+  - component: {fileID: 6109052207810921429}
   m_Layer: 0
   m_Name: FieldSlot
-  m_TagString: Untagged
+  m_TagString: FieldSlot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44,8 +45,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2e12a1a52ef77e498d8038214200279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mFieldIdx: 0
+  mFieldCoordi: {x: -1, y: -1}
+  mNearSlot:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   mSlotImg: {fileID: 1288504251963149583}
+--- !u!65 &6109052207810921429
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1839287643476996459}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2776333248303673878
 GameObject:
   m_ObjectHideFlags: 0

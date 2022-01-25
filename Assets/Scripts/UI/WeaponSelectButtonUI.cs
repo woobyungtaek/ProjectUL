@@ -16,14 +16,11 @@ public class WeaponSelectButtonUI : MonoBehaviour
         mCurrentWeapon = weapon;
 
         // ButtonText를 Weapon의 이름으로 바꾸기
-        // mButtonText.text = "";
-
-
+        mButtonText.text = weapon.CurWeaponData.Name;
     }
 
     public void OnButtonClicked()
     {
-        Debug.Log("무기선택");
         BattleManager.Instance.SelectWeaponByUI(mCurrentWeapon);
     }
 }

@@ -13,8 +13,11 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField]
     private GameObject mFieldGameObjPrefab;
     [SerializeField]
-    private WeaponSelectPopup mWeaponSelectPopup;
+    private WeaponSelectUI mWeaponSelectUI;
     public GameObject FieldGameObjPrefab { get => mFieldGameObjPrefab; }
+
+    // 메인 카메라
+    private Camera mMainCamera;
 
     // 행동권을 얻은 객체
     [SerializeField]
@@ -25,7 +28,7 @@ public class BattleManager : Singleton<BattleManager>
 
     // 필드 크기 (갯수)
     [SerializeField]
-    private readonly int mX = 5, mY = 5;
+    private readonly int mX = 3, mY = 2;
 
     private readonly Vector2Int[] mNearCoordiArr
         = new Vector2Int[] {
@@ -114,7 +117,7 @@ public class BattleManager : Singleton<BattleManager>
             Debug.Log("Test : 5 Slot Select");
             TestSelectSlot(5);
         }
-        else if(Input.GetKeyDown(KeyCode.Minus))
+        else if (Input.GetKeyDown(KeyCode.Minus))
         {
             Time.timeScale -= 0.1f;
             if(Time.timeScale < 0.0f) { Time.timeScale = 0.0f; }
@@ -138,7 +141,7 @@ public class BattleManager : Singleton<BattleManager>
                 instScarecrow.Init(mFieldSlotList[mSelectCoordi.x][mSelectCoordi.y]);
             }
         }
-        else if( Input.GetKeyDown(KeyCode.Escape))
+        else if (Input.GetKeyDown(KeyCode.Escape))
         {
             TestSelectSlot(-1);
         }
@@ -167,6 +170,7 @@ public class BattleManager : Singleton<BattleManager>
 
     private void Start()
     {
+        mMainCamera = Camera.main;
         mFlowFunc = InitBattle;
     }
 
@@ -267,6 +271,30 @@ public class BattleManager : Singleton<BattleManager>
         }
     }
 
+    private void PlayerInputFunc()
+    {
+        if ( !Input.GetMouseButtonDown(0) ) { return; }
+
+        // raycasthit 체크
+        Ray ray = mMainCamera.ScreenPointToRay(Input.mousePosition);
+        if( !Physics.Raycast(ray,out RaycastHit hit) ) { return; }
+
+        // Slot인지 확인
+        FieldSlot hitSlot = hit.collider.gameObject.GetComponent<FieldSlot>();
+        if(hitSlot == null) { return; }
+
+        bool bContain = mTargetFieldSlotList.Contains(hitSlot);
+        if(bContain == false) { return; }
+
+        Debug.Log("범위내 Slot이 맞습니다.");
+
+        // 공격범위 리스트 작성이 필요
+        // 무기 데이터가 필요 할 듯
+
+        // Weapon의 공격 범위를 가져온다.
+        // 새 공격 리스트를 만들고 해당 리스트의 범위에 해당 하는 몬스터들을 붉은 색으로 표시 한다.
+    }
+
     // 대기 열에 추가 함수
     public void AddTurnWaitObj(TimeLineObject timeObj)
     {
@@ -304,19 +332,14 @@ public class BattleManager : Singleton<BattleManager>
 
     #region 플레이어 행동 관련
 
-    public void PopupWeaponSelectUI()
+    public void OnWeaponSelectUI()
     {
-        // 무기 UI를 표시합니다.
-        // 팝업 UI를 가지고 있고 플레이어의 데이터를 넘겨서 표시한다.
-        // 팝업 UI에서 무기를 선택하면 다시 넘겨 받아서 다음 단계로 넘어가야한다.
-        if(mWeaponSelectPopup == null) { return; }
-        mWeaponSelectPopup.InitWeaponSelectPopup(mPlayer);
+        // 무기 선택 UI 켜기
+        if(mWeaponSelectUI == null) { return; }
+        mWeaponSelectUI.InitWeaponSelectUI(mPlayer);
 
-        //if(mFieldSlotList[0].CurrentFieldObj != null)
-        //{
-        //    mFieldSlotList[0].CurrentFieldObj.Hit(3f, Vector3.zero);
-        //}
-        //ResumeFlowFunc();
+        // 유저 입력 켜기
+        mFlowFunc = PlayerInputFunc;
     }
 
     public void SelectWeaponByUI(Weapon weapon)
@@ -366,7 +389,7 @@ public class BattleManager : Singleton<BattleManager>
         {
             case ETargetSelectType.Point:
                 {
-                    // x, y 좌표가 있는지 확인 후
+                    // 범위 내 확인
                     if( x < 0 || y < 0 || x >= mX || y >= mY) { break; }
                     mTargetFieldSlotList.Add(mFieldSlotList[x][y]);
                 }
@@ -381,7 +404,8 @@ public class BattleManager : Singleton<BattleManager>
                 break;
             case ETargetSelectType.Hor:
                 {
-                    // x, y 좌표있고 y값이 고정이 되어야함
+                    // y 값 범위 확인 
+                    if (y < 0 || y >= mY) { break; }
                     foreach (List<FieldSlot> slots in mFieldSlotList)
                     {
                         mTargetFieldSlotList.Add(slots[y]);
@@ -390,12 +414,13 @@ public class BattleManager : Singleton<BattleManager>
                 break;
             case ETargetSelectType.Ver:
                 {
+                    if (x < 0 || x >= mX) { break; }
                     mTargetFieldSlotList.AddRange(mFieldSlotList[x]);
                 }
                 break;
             case ETargetSelectType.RightUp:
                 {
-                    // 일단 해당 좌표 추가
+                    if (x < 0 || y < 0 || x >= mX || y >= mY) { break; }
                     mTargetFieldSlotList.Add(mFieldSlotList[x][y]);
 
                     FieldSlot inst = mFieldSlotList[x][y].RightUp;
@@ -415,7 +440,7 @@ public class BattleManager : Singleton<BattleManager>
                 break;
             case ETargetSelectType.LeftUp:
                 {
-                    // 일단 해당 좌표 추가
+                    if (x < 0 || y < 0 || x >= mX || y >= mY) { break; }
                     mTargetFieldSlotList.Add(mFieldSlotList[x][y]);
 
                     FieldSlot inst = mFieldSlotList[x][y].LeftUp;
