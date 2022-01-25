@@ -30,7 +30,7 @@ __z값_______________________________________________z값_________________________
 | 8   |   onlyStuct : 구조물이 있는 칸 전체      |  8   |   onlyStuct : 구조물이 있는 슬롯 공격  (x : 가로 인접 거리, y : 세로 인접 거리)
 | 9   |   onlyEnemy : 적이 잇는 칸 전체          |  9   |   onlyEnemy : 적이 잇는 슬롯 공격      (x : 가로 인접 거리, y : 세로 인접 거리)
 | 10  |   onlyEmpty : 빈칸 전체                  |  10  |   Random : 임의의 슬롯 공격            (x : 가로 인접 거리, y : 세로 인접 거리)
-| 11  |                                          |  11  |   StaticPoint : 고정 좌표 공격    (xy : 고정 좌표)
+| 11  |                                          |  11  |   StaticPoint : 고정 좌표 공격         (xy : 고정 좌표)
 ------------------------------------------------------------------------------------------------------------------------------------------
 
 8. 스킬 이름을 저장해두고 Delegate에 넣고 호출 시킨다.
@@ -45,6 +45,16 @@ public enum ETargetSelectType
     RightUp,    LeftUp,
     Odd,        Even,
     OnlyStruct, OnlyEnemy, OnlyEmpty
+}
+public enum EAttackSelectType
+{
+    Point = 0,
+    All,
+    Hor, Ver,
+    RightUp, LeftUp,
+    Odd, Even,
+    OnlyStruct, OnlyEnemy,
+    Random, StaticPoint
 }
 
 [System.Serializable]
