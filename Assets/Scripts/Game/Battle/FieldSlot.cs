@@ -82,20 +82,20 @@ public class FieldSlot : MonoBehaviour
         // 표시 색 변경
         mSlotImg.color = Color.white;
 
-        // 선택용 콜라이더박스 Off
+        if(mCurrentFieldObj != null)
+        {
+            mCurrentFieldObj.CurrentFieldGameObject.IsAttackTarget = false;
+        }
     }
 
-    // 선택 가능한 상태로 변경
     public void ChangeSlotState_PossibleSelect()
     {
         // 표시 색 변경
         mSlotImg.color = Color.blue;
-
-        // 선택용 콜라이더박스 On
     }
 
-    // 필드 오브젝트가 설정되면
-    // 필드 오브젝트의 그림을 현재 위치에 표시해줘야함
-    // 그 작업은 필드 오브젝트가 직접 생성하고 가지고 있으며
-    // 슬롯은 위치만 알려준다.
+    public void ChangeAttackTarget(bool bAttackTarget)
+    {
+        mCurrentFieldObj.CurrentFieldGameObject.IsAttackTarget = bAttackTarget;
+    }
 }

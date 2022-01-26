@@ -26,25 +26,31 @@ public class DataManager : Singleton<DataManager>
 
         // 단일 속성
         // 전체 / 타겟만
-        mWeaponDataDict["Weapon_0"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.All )      );
+        mWeaponDataDict["Weapon_0"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.All ));
+        mWeaponDataDict["Weapon_0"].AttackCoordiList.Add(new Vector3Int(0, 0, (int)EAttackSelectType.Point));
 
         // 가로줄 / 타겟만
-        mWeaponDataDict["Weapon_1"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.Hor)       );
+        mWeaponDataDict["Weapon_1"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.Hor));
+        mWeaponDataDict["Weapon_1"].AttackCoordiList.Add(new Vector3Int(0, 0, (int)EAttackSelectType.Point));
 
         // 세로줄 / 타겟만
-        mWeaponDataDict["Weapon_2"].TargetCoordiList.Add(new Vector3Int(1, 0, (int)ETargetSelectType.Ver)       );
+        mWeaponDataDict["Weapon_2"].TargetCoordiList.Add(new Vector3Int(1, 0, (int)ETargetSelectType.Ver));
+        mWeaponDataDict["Weapon_2"].AttackCoordiList.Add(new Vector3Int(0, 0, (int)EAttackSelectType.Point));
 
-        // 가로줄 / 세로 전체
-        mWeaponDataDict["Weapon_3"].TargetCoordiList.Add(new Vector3Int(1, 1, (int)ETargetSelectType.RightUp)   );
+        // 가로줄 / 선택 세로 전체
+        mWeaponDataDict["Weapon_3"].TargetCoordiList.Add(new Vector3Int(1, 1, (int)ETargetSelectType.RightUp));
+        mWeaponDataDict["Weapon_3"].AttackCoordiList.Add(new Vector3Int(0, 0, (int)EAttackSelectType.Ver));
 
-        // 세로줄 / 가로 전체
-        mWeaponDataDict["Weapon_4"].TargetCoordiList.Add(new Vector3Int(1, 1, (int)ETargetSelectType.LeftUp)    );
+        // 세로줄 / 선택 가로 전체
+        mWeaponDataDict["Weapon_4"].TargetCoordiList.Add(new Vector3Int(1, 1, (int)ETargetSelectType.LeftUp));
+        mWeaponDataDict["Weapon_4"].AttackCoordiList.Add(new Vector3Int(0, 0, (int)EAttackSelectType.Hor));
 
-        // 빈 칸 전체
-        mWeaponDataDict["Weapon_5"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.OnlyEmpty) );
+        // 빈 칸 전체 / 우측 대각
+        mWeaponDataDict["Weapon_5"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.OnlyEmpty));
+        mWeaponDataDict["Weapon_5"].AttackCoordiList.Add(new Vector3Int(0, 0, (int)EAttackSelectType.Hor));
 
         // 적이 있는 칸 전체
-        mWeaponDataDict["Weapon_6"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.OnlyEnemy) );
+        mWeaponDataDict["Weapon_6"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.OnlyEnemy));
 
         // 체크 홀수
         mWeaponDataDict["Weapon_7"].TargetCoordiList.Add(new Vector3Int(0, 0, (int)ETargetSelectType.Odd));

@@ -28,7 +28,7 @@ public class BattleManager : Singleton<BattleManager>
 
     // 필드 크기 (갯수)
     [SerializeField]
-    private readonly int mX = 3, mY = 2;
+    private readonly int mX = 10, mY = 10;
 
     private readonly Vector2Int[] mNearCoordiArr
         = new Vector2Int[] {
@@ -85,78 +85,27 @@ public class BattleManager : Singleton<BattleManager>
 
     private void TestInput()
     {
-        if (Input.anyKeyDown == false) { return; }
+        if (!Input.GetMouseButtonDown(0)) { return; }
 
-        if (Input.GetKeyDown(KeyCode.BackQuote))
-        {
-            Debug.Log("Test : 0 Slot Select");
-            TestSelectSlot(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            Debug.Log("Test : 1 Slot Select");
-            TestSelectSlot(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            Debug.Log("Test : 2 Slot Select");
-            TestSelectSlot(2);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            Debug.Log("Test : 3 Slot Select");
-            TestSelectSlot(3);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            Debug.Log("Test : 4 Slot Select");
-            TestSelectSlot(4);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            Debug.Log("Test : 5 Slot Select");
-            TestSelectSlot(5);
-        }
-        else if (Input.GetKeyDown(KeyCode.Minus))
-        {
-            Time.timeScale -= 0.1f;
-            if (Time.timeScale < 0.0f) { Time.timeScale = 0.0f; }
-        }
-        else if (Input.GetKeyDown(KeyCode.Equals))
-        {
-            Time.timeScale += 0.1f;
-        }
-        else if (Input.GetKeyDown(KeyCode.Space))
-        {
-            int num = (mSelectCoordi.y * mX) + mSelectCoordi.x;
-            if (num >= 0 && num < mX * mY)
-            {
-                // 해당 필드에 오브젝트가 없을때
-                if (mFieldSlotList[mSelectCoordi.x][mSelectCoordi.y].CurrentFieldObj != null) { return; }
+        // raycasthit 체크
+        Ray ray = mMainCamera.ScreenPointToRay(Input.mousePosition);
+        if (!Physics.Raycast(ray, out RaycastHit hit)) { return; }
 
-                Debug.Log($"Test : {mSelectCoordi}에 Scarecrow 생성");
+        // Slot인지 확인
+        FieldSlot hitSlot = hit.collider.gameObject.GetComponent<FieldSlot>();
+        if (hitSlot == null) { return; }
 
-                // Enemy는 생성하고 Init하면 TimeLine과 FieldObject가 초기화 된다.
-                Scarecrow instScarecrow = new Scarecrow();
-                instScarecrow.Init(mFieldSlotList[mSelectCoordi.x][mSelectCoordi.y]);
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        if (hitSlot.CurrentFieldObj == null)
         {
-            TestSelectSlot(-1);
+            Debug.Log($"Test : {mSelectCoordi}에 Scarecrow 생성");
+
+            // Enemy는 생성하고 Init하면 TimeLine과 FieldObject가 초기화 된다.
+            Scarecrow instScarecrow = new Scarecrow();
+            instScarecrow.Init(hitSlot);
         }
-    }
-
-    private void TestSelectSlot(int idx)
-    {
-        mSelectCoordi = new Vector2Int(idx % mX, idx / mX);
-
-        foreach (List<FieldSlot> fieldSlots in mFieldSlotList)
+        else
         {
-            foreach (FieldSlot slot in fieldSlots)
-            {
-                slot.SelectSlot(mSelectCoordi);
-            }
+            Debug.Log($"Test : {mSelectCoordi}에 Scarecrow 제거 해야함");            
         }
     }
 
@@ -286,10 +235,12 @@ public class BattleManager : Singleton<BattleManager>
         bool bContain = mTargetFieldSlotList.Contains(hitSlot);
         if (bContain == false) { return; }
 
-        Debug.Log("범위내 Slot이 맞습니다.");
-
-        // 공격범위 리스트 작성이 필요
-        // 무기 데이터가 필요 할 듯
+        // 공격 리스트에 해당하는 몬스터 빨간색 표시
+        foreach (FieldSlot slot in mAttackFieldSlotList)
+        {
+            slot.ChangeAttackTarget(false);
+        }
+        mAttackFieldSlotList.Clear();
 
         // Weapon의 공격 범위를 가져온다.
         foreach (Vector3Int coordi in mSelectWeapon.CurWeaponData.AttackCoordiList)
@@ -297,8 +248,11 @@ public class BattleManager : Singleton<BattleManager>
             AddAttackList(hitSlot, coordi);
         }
 
-        // 새 공격 리스트를 만들고 해당 리스트의 범위에 해당 하는 몬스터들을 붉은 색으로 표시 한다.
-        //
+        // 공격 리스트에 해당하는 몬스터 빨간색 표시
+        foreach(FieldSlot slot in mAttackFieldSlotList)
+        {
+            slot.ChangeAttackTarget(true);
+        }
     }
 
     // 대기 열에 추가 함수
@@ -310,6 +264,7 @@ public class BattleManager : Singleton<BattleManager>
     #endregion
 
     #region Flow 재개 관련
+
     public void IncreaseAniCount()
     {
         // 애니메이션 카운트가 증가 합니다.
@@ -527,90 +482,153 @@ public class BattleManager : Singleton<BattleManager>
     {
         EAttackSelectType selectType = (EAttackSelectType)area.z;
 
-        int x = area.x;
-        int y = area.y;
-
         Vector2Int slotCoordi = slot.FieldCoordi;
         switch (selectType)
         {
             case EAttackSelectType.Point:
                 {
                     // 무기 좌표 + 선택 좌표
-                    int tX = x + slotCoordi.x;
-                    int tY = y + slotCoordi.y;
-                    if (tX < 0 || tY < 0 || tX >= mX || tY >= mY) { break; }
-                    if (mFieldSlotList[tX][tY].CurrentFieldObj == null) { break; }
-                    mAttackFieldSlotList.Add(mFieldSlotList[tX][tY]);
+                    int aX = area.x + slotCoordi.x;
+                    int aY = area.x + slotCoordi.y;
+                    if (aX < 0 || aY < 0 || aX >= mX || aY >= mY) { break; }
+                    if (mFieldSlotList[aX][aY].CurrentFieldObj == null) { break; }
+                    mAttackFieldSlotList.Add(mFieldSlotList[aX][aY]);
                 }
                 break;
             case EAttackSelectType.All:
                 {
                     // 전체 중 오브젝트가 있는 경우
                     IEnumerable<FieldSlot> list = from line in mFieldSlotList
-                                                  from target in line
-                                                  where target.CurrentFieldObj != null
-                                                  select target;
+                                                  from attack in line
+                                                  where attack.CurrentFieldObj != null
+                                                  select attack;
                     mAttackFieldSlotList.AddRange(list);
                 }
                 break;
             case EAttackSelectType.Hor:
                 {
-                    // 선택 좌표값 중 y값이 같고 오브젝트가 있는 경우
-                    if (slotCoordi.y < 0 || slotCoordi.y >= mY) { break; }
-                    IEnumerable<FieldSlot> list = from line in mFieldSlotList
-                                                  where line[slotCoordi.y].CurrentFieldObj != null
-                                                  select line[slotCoordi.y];
-                    mAttackFieldSlotList.AddRange(list);
+                    // max, min 설정 (max, min 까지 포함 해야함)
+                    int max = slotCoordi.x + area.x; // 우
+                    int min = slotCoordi.x - area.y; // 좌
+
+                    // 범위 넘어가는 것 체크
+                    if (max >= mX) { max = mX - 1; }
+                    if (min < 0) { min = 0; }
+
+                    // 오브젝트가 있으면 추가
+                    for (int x = min; x <= max; ++x)
+                    {
+                        if (mFieldSlotList[x][slotCoordi.y].CurrentFieldObj == null) { continue; }
+                        mAttackFieldSlotList.Add(mFieldSlotList[x][slotCoordi.y]);
+                    }
                 }
                 break;
             case EAttackSelectType.Ver:
                 {
-                    // 선택 좌표값 중 x값이 같고 오브젝트가 있는 경우
-                    if (slotCoordi.x < 0 || slotCoordi.x >= mX) { break; }
-                    IEnumerable<FieldSlot> list = from target in mFieldSlotList[slotCoordi.x]
-                                                  where target.CurrentFieldObj != null
-                                                  select target;
-                    mTargetFieldSlotList.AddRange(list);
+                    // max, min 설정 (max, min 까지 포함 해야함)
+                    int max = slotCoordi.y + area.x; // 상 
+                    int min = slotCoordi.y - area.y; // 하
+
+                    // 범위 넘어가는 것 체크
+                    if (max >= mY) { max = mY - 1; }
+                    if (min < 0) { min = 0; }
+
+                    // 오브젝트가 있으면 추가
+                    for (int y = min; y <= max; ++y)
+                    {
+                        if (mFieldSlotList[slotCoordi.x][y].CurrentFieldObj == null) { continue; }
+                        mAttackFieldSlotList.Add(mFieldSlotList[slotCoordi.x][y]);
+                    }
                 }
                 break;
             case EAttackSelectType.RightUp:
                 {
-                    // 선택 좌표와 우상단, 좌하단 중 오브젝트가 있는 경우
-                    if (slotCoordi.x < 0 || slotCoordi.y < 0 || slotCoordi.x >= mX || slotCoordi.y >= mY) { break; }
-                    mAttackFieldSlotList.Add(mFieldSlotList[slotCoordi.x][slotCoordi.y]);
+                    // 최소 좌표 최대 좌표 (이미 카운트가 적용된 상태)
+                    Vector2Int minCoordi = new Vector2Int(slotCoordi.x - area.y, slotCoordi.y + (area.y * -1));
+                    Vector2Int maxCoordi = new Vector2Int(slotCoordi.x + area.x, slotCoordi.y + area.x);
 
-                    FieldSlot inst = mFieldSlotList[slotCoordi.x][slotCoordi.y].RightUp;
-                    while (inst != null)
+                    // 최소 값 조정
+                    if (minCoordi.x > maxCoordi.x)
                     {
-                        if (inst.CurrentFieldObj != null) { mAttackFieldSlotList.Add(inst); }
-                        inst = inst.RightUp;
+                        Vector2Int temp = minCoordi;
+                        minCoordi = maxCoordi;
+                        maxCoordi = temp;
                     }
 
-                    inst = mFieldSlotList[slotCoordi.x][slotCoordi.y].LeftDown;
-                    while (inst != null && inst.CurrentFieldObj != null)
+                    // 최소 값이 상단을 넘어 섰다면 추가할 것이 없다.
+                    if (minCoordi.x >= mX || minCoordi.y >= mY) { break; }
+
+                    // x가 뒤로 빠진만큼 당겨온다.
+                    if (minCoordi.x < 0) 
                     {
-                        if (inst.CurrentFieldObj != null) { mAttackFieldSlotList.Add(inst); }
-                        inst = inst.LeftDown;
+                        minCoordi.y -= minCoordi.x;
+                        minCoordi.x = 0;
+                    }
+
+                    // y가 아래로 빠진 만큼 당겨온다.
+                    if (minCoordi.y < 0)
+                    {
+                        minCoordi.x -= minCoordi.y;
+                        minCoordi.y = 0;
+                    }
+
+
+                    FieldSlot inst = mFieldSlotList[minCoordi.x][minCoordi.y];
+                    while (true)
+                    {
+                        if (inst == null) { break; }                        // 더 이상 없을 때
+                        if (inst.CurrentFieldObj != null)                   // 오브젝트가 없을 때 추가 X
+                        {
+                            mAttackFieldSlotList.Add(inst);
+                        }
+                        if (inst.FieldCoordi == maxCoordi) { break; }       // 최대 좌표에 도착 했을 때 멈춘다.
+                        inst = inst.RightUp;
                     }
                 }
                 break;
             case EAttackSelectType.LeftUp:
                 {
-                    if (slotCoordi.x < 0 || slotCoordi.y < 0 || slotCoordi.x >= mX || slotCoordi.y >= mY) { break; }
-                    mAttackFieldSlotList.Add(mFieldSlotList[slotCoordi.x][slotCoordi.y]);
+                    // 최소 좌표 최대 좌표 (이미 카운트가 적용된 상태)
+                    Vector2Int minCoordi = new Vector2Int(slotCoordi.x + area.x, slotCoordi.y + (area.x * -1));
+                    Vector2Int maxCoordi = new Vector2Int(slotCoordi.x + area.y, slotCoordi.y + area.y);
 
-                    FieldSlot inst = mFieldSlotList[slotCoordi.x][slotCoordi.y].LeftUp;
-                    while (inst != null && inst.CurrentFieldObj != null)
+                    // 최소 값 조정
+                    if (minCoordi.x <  maxCoordi.x)
                     {
-                        if (inst.CurrentFieldObj != null) { mAttackFieldSlotList.Add(inst); }
-                        inst = inst.RightUp;
+                        Vector2Int temp = minCoordi;
+                        minCoordi = maxCoordi;
+                        maxCoordi = temp;
                     }
 
-                    inst = mFieldSlotList[slotCoordi.x][slotCoordi.y].RightDown;
-                    while (inst != null && inst.CurrentFieldObj != null)
+                    // 최소 값이 상단을 넘어 섰다면 추가할 것이 없다.
+                    if (minCoordi.x < 0 || minCoordi.y >= mY) { break; }
+
+                    // x가 앞으로 빠진만큼 당겨온다.
+                    if (minCoordi.x >= mX)
                     {
-                        if (inst.CurrentFieldObj != null) { mAttackFieldSlotList.Add(inst); }
-                        inst = inst.LeftDown;
+                        int limitX = (mX - 1);
+                        minCoordi.y -= (minCoordi.x - limitX);
+                        minCoordi.x = limitX;
+                    }
+
+                    // y가 아래로 빠진 만큼 당겨온다.
+                    if (minCoordi.y < 0)
+                    {
+                        minCoordi.x -= minCoordi.y;
+                        minCoordi.y = 0;
+                    }
+
+
+                    FieldSlot inst = mFieldSlotList[minCoordi.x][minCoordi.y];
+                    while (true)
+                    {
+                        if (inst == null) { break; }                        // 더 이상 없을 때
+                        if (inst.CurrentFieldObj != null)                   // 오브젝트가 없을 때 추가 X
+                        {
+                            mAttackFieldSlotList.Add(inst);
+                        }
+                        if (inst.FieldCoordi == maxCoordi) { break; }       // 최대 좌표에 도착 했을 때 멈춘다.
+                        inst = inst.LeftUp;
                     }
                 }
                 break;
@@ -628,6 +646,7 @@ public class BattleManager : Singleton<BattleManager>
                 break;
         }
     }
+    
     #endregion
 
     #region FieldSlot관련
