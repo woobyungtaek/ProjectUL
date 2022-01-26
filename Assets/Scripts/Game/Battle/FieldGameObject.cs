@@ -20,31 +20,9 @@ public class FieldGameObject : MonoBehaviour
     [SerializeField]
     private Animator mAnimator;
 
-    [SerializeField]
-    private RuntimeAnimatorController mAniController;
-
-    public bool IsAttackTarget
-    {
-        set
-        {
-            if (value) 
-            {
-                mAnimator.runtimeAnimatorController = null;
-                mSpriteRenderer.color = Color.red;
-                mAnimator.runtimeAnimatorController = mAniController;
-            }
-            else
-            {
-                mAnimator.runtimeAnimatorController = null;
-                mSpriteRenderer.color = Color.white;
-                mAnimator.runtimeAnimatorController = mAniController;
-            }
-        }
-    }
-
     //Static
     private static Dictionary<string, WaitForSeconds> mWaitSecDict = new Dictionary<string, WaitForSeconds>();
-
+    
     private void Awake()
     {
         if (mWaitSecDict.Count == 0)

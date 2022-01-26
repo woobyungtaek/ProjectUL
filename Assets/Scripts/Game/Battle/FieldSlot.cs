@@ -13,7 +13,10 @@ public class FieldSlot : MonoBehaviour
     // (0, up)부터 시계방향으로 순서대로
     [SerializeField]
     private FieldSlot[] mNearSlot = new FieldSlot[8];
-    
+
+    [SerializeField]
+    private GameObject AttackTargetMark;
+
     // 인접 슬롯 설정
     public void SetNearSlot(int dir, FieldSlot slot)
     {
@@ -81,11 +84,7 @@ public class FieldSlot : MonoBehaviour
     {
         // 표시 색 변경
         mSlotImg.color = Color.white;
-
-        if(mCurrentFieldObj != null)
-        {
-            mCurrentFieldObj.CurrentFieldGameObject.IsAttackTarget = false;
-        }
+        AttackTargetMark.SetActive(false);
     }
 
     public void ChangeSlotState_PossibleSelect()
@@ -96,6 +95,6 @@ public class FieldSlot : MonoBehaviour
 
     public void ChangeAttackTarget(bool bAttackTarget)
     {
-        mCurrentFieldObj.CurrentFieldGameObject.IsAttackTarget = bAttackTarget;
+        AttackTargetMark.SetActive(bAttackTarget);
     }
 }

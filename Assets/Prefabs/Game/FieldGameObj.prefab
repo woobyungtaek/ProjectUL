@@ -47,7 +47,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mSpriteRenderer: {fileID: 8797633511751665514}
   mAnimator: {fileID: 8797633511139733164}
-  mAniController: {fileID: 9100000, guid: f02dd8e7d43f5b14d91bdc657e050305, type: 2}
 --- !u!95 &8797633511139733164
 Animator:
   serializedVersion: 3
