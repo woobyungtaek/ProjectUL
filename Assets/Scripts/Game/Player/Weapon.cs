@@ -6,10 +6,8 @@ using UnityEngine;
  무기는 무기데이터를 입력 받아서 초기화 된다.
 static한 곳에서 함수와 프리팹, 이미지 등을 새로 셋팅 한다.
 무기가 선택 되면 배틀 매니저가 무기를 사용한다.
-
  */
 
-[System.Serializable]
 public class Weapon
 {
     public Weapon(WeaponData data)

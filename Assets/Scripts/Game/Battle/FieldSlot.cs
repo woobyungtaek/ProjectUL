@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethod;
 
 [System.Serializable]
 public class FieldSlot : MonoBehaviour
@@ -8,7 +9,9 @@ public class FieldSlot : MonoBehaviour
     // 필드 번호
     [SerializeField]
     private Vector2Int mFieldCoordi = new Vector2Int(-1, -1);
+    private bool mbEvenSlot;
     public Vector2Int FieldCoordi { get => mFieldCoordi; }
+    public bool IsEven { get => mbEvenSlot; }
 
     // (0, up)부터 시계방향으로 순서대로
     [SerializeField]
@@ -63,6 +66,8 @@ public class FieldSlot : MonoBehaviour
 
         mFieldCoordi = coordi;
 
+        mbEvenSlot = ((mFieldCoordi.x + mFieldCoordi.y) % 2 == 0);
+
         // 현재 idx와 col, row로 게임오브젝트 포지션 설정
         transform.localPosition = new Vector3(coordi.x * 2.5f, 0, coordi.y * 4.5f);
     }
@@ -78,6 +83,15 @@ public class FieldSlot : MonoBehaviour
 
         // Red로 변경
         mSlotImg.color = Color.red;
+    }
+
+    
+    public void HitSlot(Weapon weapon)
+    {
+        if(mCurrentFieldObj != null)
+        {
+            mCurrentFieldObj.Hit(weapon.CurWeaponData.Power,Vector3.zero);
+        }
     }
 
     public void ChangeSlotState_Reset()

@@ -60,6 +60,8 @@ public class BattleManager : Singleton<BattleManager>
     private Player mPlayer;
     [SerializeField]
     private Weapon mSelectWeapon;
+    [SerializeField]
+    private FieldSlot mSelectSlot;
 
     // 플로우용 Delegate
     private delegate void FlowFunc();
@@ -222,6 +224,7 @@ public class BattleManager : Singleton<BattleManager>
     private void PlayerInputFunc()
     {
         if (!Input.GetMouseButtonDown(0)) { return; }
+        if (mSelectWeapon == null) { return; }
 
         // raycasthit 체크
         Ray ray = mMainCamera.ScreenPointToRay(Input.mousePosition);
@@ -231,8 +234,22 @@ public class BattleManager : Singleton<BattleManager>
         FieldSlot hitSlot = hit.collider.gameObject.GetComponent<FieldSlot>();
         if (hitSlot == null) { return; }
 
+        // 이전 선택이랑 같은가
+        if(mSelectSlot != null && mSelectSlot == hitSlot)
+        {
+            ResetFieldSlotState();
+            mWeaponSelectUI.gameObject.SetActive(false);
+
+            // 공격 진행 플로우로 진행
+            mFlowFunc = AttackFlowFunc;
+            return;
+        }
+
+        mSelectSlot = hitSlot;
+
         bool bContain = mTargetFieldSlotList.Contains(hitSlot);
         if (bContain == false) { return; }
+             
 
         // 공격 리스트에 해당하는 몬스터 빨간색 표시
         foreach (FieldSlot slot in mAttackFieldSlotList)
@@ -253,6 +270,19 @@ public class BattleManager : Singleton<BattleManager>
         {
             slot.ChangeAttackTarget(true);
         }
+    }
+
+    private void AttackFlowFunc()
+    {
+        // mAttackFieldSlotList에 Hit를 진행 한다.
+        foreach(FieldSlot slot in mAttackFieldSlotList)
+        {
+            slot.HitSlot(mSelectWeapon);
+        }
+        mAttackFieldSlotList.Clear();
+
+        mFlowFunc = null;
+        //ResumeFlowFunc();
     }
 
     // 대기 열에 추가 함수
@@ -299,6 +329,9 @@ public class BattleManager : Singleton<BattleManager>
         if (mWeaponSelectUI == null) { return; }
         mWeaponSelectUI.InitWeaponSelectUI(mPlayer);
 
+        mSelectWeapon = null;
+        mSelectSlot = null;
+
         // 유저 입력 켜기
         mFlowFunc = PlayerInputFunc;
     }
@@ -309,17 +342,11 @@ public class BattleManager : Singleton<BattleManager>
 
         // 공격 가능 슬롯 초기화
         mTargetFieldSlotList.Clear();
-
-        foreach (var slots in mFieldSlotList)
-        {
-            foreach (var slot in slots)
-            {
-                slot.ChangeSlotState_Reset();
-            }
-        }
+        ResetFieldSlotState();
 
         // Weapon의 정보 대로 값을 보여준다.
         mSelectWeapon = weapon;
+        mSelectSlot = null;
 
         // 선택 가능한 slotList 만들기
         var list = mSelectWeapon.CurWeaponData.TargetCoordiList;
@@ -337,7 +364,21 @@ public class BattleManager : Singleton<BattleManager>
             slot.ChangeSlotState_PossibleSelect();
         }
     }
+    
+    #endregion
 
+    #region FieldSlot관련
+
+    private void ResetFieldSlotState()
+    {
+        foreach (var slots in mFieldSlotList)
+        {
+            foreach (var slot in slots)
+            {
+                slot.ChangeSlotState_Reset();
+            }
+        }
+    }
     private void AddTargetList(Vector3Int area)
     {
         //일단 z값 읽어서 속성
@@ -420,26 +461,21 @@ public class BattleManager : Singleton<BattleManager>
                 break;
             case ETargetSelectType.Odd:
                 {
-                    for (int idxX = 0; idxX < mX; ++idxX)
-                    {
-                        for (int idxY = 0; idxY < mY; ++idxY)
-                        {
-                            if ((idxX + idxY) % 2 == 0) { continue; }
-                            mTargetFieldSlotList.Add(mFieldSlotList[idxX][idxY]);
-                        }
-                    }
+
+                    IEnumerable<FieldSlot> list = from slots in mFieldSlotList
+                                                  from tSlot in slots
+                                                  where tSlot.IsEven == false
+                                                  select tSlot;
+                    mTargetFieldSlotList.AddRange(list);
                 }
                 break;
             case ETargetSelectType.Even:
                 {
-                    for (int idxX = 0; idxX < mX; ++idxX)
-                    {
-                        for (int idxY = 0; idxY < mY; ++idxY)
-                        {
-                            if ((idxX + idxY) % 2 != 0) { continue; }
-                            mTargetFieldSlotList.Add(mFieldSlotList[idxX][idxY]);
-                        }
-                    }
+                    IEnumerable<FieldSlot> list = from slots in mFieldSlotList
+                                                  from tSlot in slots
+                                                  where tSlot.IsEven == true
+                                                  select tSlot;
+                    mTargetFieldSlotList.AddRange(list);
                 }
                 break;
             case ETargetSelectType.OnlyStruct:
@@ -477,7 +513,6 @@ public class BattleManager : Singleton<BattleManager>
                 break;
         }
     }
-
     private void AddAttackList(FieldSlot slot, Vector3Int area)
     {
         EAttackSelectType selectType = (EAttackSelectType)area.z;
@@ -496,11 +531,15 @@ public class BattleManager : Singleton<BattleManager>
                 break;
             case EAttackSelectType.All:
                 {
-                    // 전체 중 오브젝트가 있는 경우
-                    foreach (var list in mFieldSlotList)
-                    {
-                        mAttackFieldSlotList.AddRange(list);
-                    }
+                    Vector2Int leftBottom, rightTop;
+                    CreateRectCoordi((Vector2Int)area, slot.FieldCoordi, out leftBottom, out rightTop);
+
+                    IEnumerable<FieldSlot> list = from slots in mFieldSlotList
+                                                  from tSlot in slots
+                                                  where leftBottom.x <= tSlot.FieldCoordi.x && leftBottom.y <= tSlot.FieldCoordi.y
+                                                  where rightTop.x >= tSlot.FieldCoordi.x && rightTop.y >= tSlot.FieldCoordi.y
+                                                  select tSlot;
+                    mAttackFieldSlotList.AddRange(list);
                 }
                 break;
             case EAttackSelectType.Hor:
@@ -566,16 +605,16 @@ public class BattleManager : Singleton<BattleManager>
                     {
                         // start는 max부터 leftdown
                         inst = mFieldSlotList[maxCoordi.x][maxCoordi.y];
-                        while(true)
+                        while (true)
                         {
-                            if(inst == null) { break; }
+                            if (inst == null) { break; }
                             mAttackFieldSlotList.Add(inst);
-                            if(inst.FieldCoordi == minCoordi) { break; }
+                            if (inst.FieldCoordi == minCoordi) { break; }
                             inst = inst.LeftDown;
                         }
                         break;
                     }
-                    else if(minCoordi.x >= slotCoordi.x)
+                    else if (minCoordi.x >= slotCoordi.x)
                     {
                         // start는 min부터 rightup
                         inst = mFieldSlotList[minCoordi.x][minCoordi.y];
@@ -591,7 +630,7 @@ public class BattleManager : Singleton<BattleManager>
 
                     // 그렇지 않은경우 양쪽으로 찾아가면됨
                     FieldSlot start = inst;
-                    while(true)
+                    while (true)
                     {
                         if (inst == null) { break; }
                         mAttackFieldSlotList.Add(inst);
@@ -599,7 +638,7 @@ public class BattleManager : Singleton<BattleManager>
                         inst = inst.LeftDown;
                     }
                     inst = start;
-                    while(true)
+                    while (true)
                     {
                         if (inst == null) { break; }
                         mAttackFieldSlotList.Add(inst);
@@ -622,8 +661,8 @@ public class BattleManager : Singleton<BattleManager>
                         maxCoordi = temp;
                     }
 
-                    if (!( minCoordi.x >= 0 && minCoordi.y < mY )) { break; }
-                    if (!( maxCoordi.x < mX && maxCoordi.y >= 0 )) { break; }
+                    if (!(minCoordi.x >= 0 && minCoordi.y < mY)) { break; }
+                    if (!(maxCoordi.x < mX && maxCoordi.y >= 0)) { break; }
 
                     FieldSlot inst = slot;
                     if (maxCoordi.x >= slotCoordi.x)
@@ -673,24 +712,79 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 break;
             case EAttackSelectType.Odd:
+                {
+                    Vector2Int leftBottom, rightTop;
+                    CreateRectCoordi((Vector2Int)area, slot.FieldCoordi, out leftBottom, out rightTop);
+
+                    AddAttackField_OddEven(false, leftBottom, rightTop);
+                }
                 break;
             case EAttackSelectType.Even:
+                {
+                    Vector2Int leftBottom, rightTop;
+                    CreateRectCoordi((Vector2Int)area, slot.FieldCoordi, out leftBottom, out rightTop);
+
+                    AddAttackField_OddEven(true, leftBottom, rightTop);
+                }
                 break;
             case EAttackSelectType.OnlyStruct:
                 break;
             case EAttackSelectType.OnlyEnemy:
-                break;
-            case EAttackSelectType.Random:
+                {
+                    Vector2Int leftBottom, rightTop;
+                    CreateRectCoordi((Vector2Int)area, slot.FieldCoordi, out leftBottom, out rightTop);
+
+                    IEnumerable<FieldSlot> list = from slots in mFieldSlotList
+                                                  from tSlot in slots
+                                                  where leftBottom.x <= tSlot.FieldCoordi.x && leftBottom.y <= tSlot.FieldCoordi.y
+                                                  where rightTop.x >= tSlot.FieldCoordi.x && rightTop.y >= tSlot.FieldCoordi.y
+                                                  where (tSlot.CurrentFieldObj is Enemy) == true
+                                                  select tSlot;
+                    mAttackFieldSlotList.AddRange(list);
+                }
                 break;
             case EAttackSelectType.StaticPoint:
+                {
+                    // 무조건 해당 좌표만 공격
+                    if (!(area.x >= 0 && area.y >= 0 && area.x < mX && area.y < mY)) { break; }
+
+                    mAttackFieldSlotList.Add(mFieldSlotList[area.x][area.y]);
+                }
                 break;
         }
     }
+    private void CreateRectCoordi(Vector2Int size, Vector2Int center, out Vector2Int leftbottom, out Vector2Int righttop)
+    {
+        leftbottom = center - size;
+        righttop = center + size;
 
-    #endregion
-
-    #region FieldSlot관련
-
+        if (leftbottom.x > righttop.x)
+        {
+            int temp = leftbottom.x;
+            leftbottom.x = righttop.x;
+            righttop.x = temp;
+        }
+        if (leftbottom.y > righttop.y)
+        {
+            int temp = leftbottom.y;
+            leftbottom.y = righttop.y;
+            righttop.y = temp;
+        }
+        if (leftbottom.x < 0) { leftbottom.x = 0; }
+        if (leftbottom.y < 0) { leftbottom.y = 0; }
+        if (righttop.x >= mX) { righttop.x = mX; }
+        if (righttop.y >= mY) { righttop.y = mY; }
+    }
+    private void AddAttackField_OddEven(bool bEven, Vector2Int leftbottom, Vector2Int righttop)
+    {
+        IEnumerable<FieldSlot> list = from slots in mFieldSlotList
+                                      from tSlot in slots
+                                      where leftbottom.x <= tSlot.FieldCoordi.x && leftbottom.y <= tSlot.FieldCoordi.y
+                                      where righttop.x >= tSlot.FieldCoordi.x && righttop.y >= tSlot.FieldCoordi.y
+                                      where tSlot.IsEven == bEven
+                                      select tSlot;
+        mAttackFieldSlotList.AddRange(list);
+    }
 
     #endregion
 
