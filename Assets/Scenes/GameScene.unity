@@ -896,16 +896,7 @@ MonoBehaviour:
   mFieldsTransform: {fileID: 928234533}
   mTargetFieldSlotList: []
   mAttackFieldSlotList: []
-  mPlayer:
-    mWeaponList: []
-  mSelectWeapon:
-    mWeaponData:
-      Index: 0
-      Name: 
-      Power: 0
-      Speed: 0
-      TargetCoordiList: []
-      AttackCoordiList: []
+  mSelectSlot: {fileID: 0}
   mTimeLineBarUI: {fileID: 1423637509}
   mSelectCoordi: {x: -1, y: -1}
 --- !u!1 &1888773420

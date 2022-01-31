@@ -1,11 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Linq;
 using ExtensionMethod;
 
+
 public class BattleManager : Singleton<BattleManager>
 {
+#if UNITY_EDITOR
+    private static readonly int PointerID = -1;
+#elif UNITY_ANDROID
+    private static readonly int PointerID = 0;
+#endif
+
     // 프리팹들
     [SerializeField]
     private GameObject mFieldSlotPrefab;
@@ -53,10 +61,6 @@ public class BattleManager : Singleton<BattleManager>
 
     // 필드 게임오브젝트 리스트
     [SerializeField]
-    private LinkedList<GameObject> mFieldGameObjLList = new LinkedList<GameObject>();
-
-
-    [SerializeField]
     private Player mPlayer;
     [SerializeField]
     private Weapon mSelectWeapon;
@@ -79,13 +83,14 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField]
     private TimeLineBarUI mTimeLineBarUI;
 
-    #region TestVal
+#region TestVal
 
     [SerializeField]
     private Vector2Int mSelectCoordi = new Vector2Int(-1, -1);
 
     private void TestInput()
     {
+        if(mAniCount > 0) { return; }
         if (!Input.GetMouseButtonDown(0)) { return; }
 
         // raycasthit 체크
@@ -101,16 +106,30 @@ public class BattleManager : Singleton<BattleManager>
             Debug.Log($"Test : {mSelectCoordi}에 Scarecrow 생성");
 
             // Enemy는 생성하고 Init하면 TimeLine과 FieldObject가 초기화 된다.
-            Scarecrow instScarecrow = new Scarecrow();
+            Scarecrow instScarecrow = ObjectPool.GetInst<Scarecrow>();
             instScarecrow.Init(hitSlot);
         }
         else
         {
             Debug.Log($"Test : {mSelectCoordi}에 Scarecrow 제거 해야함");
+
+            IFieldObject fieldObj = hitSlot.CurrentFieldObj;
+            TimeLineObject obj = fieldObj as TimeLineObject;
+            if (obj != null)
+            {
+                TimeLineObjNotiArg args = ObjectPool.GetInst<TimeLineObjNotiArg>();
+                args.timelineObj = obj;
+
+                mTimeLineObjList.Remove(obj);
+                mTurnWaitLList.Remove(obj);
+
+                ObserverCenter.Instance.SendNotification(Message.RemoveTimeLineObject, args);
+            }
+            hitSlot.RemoveFieldObject();
         }
     }
 
-    #endregion
+#endregion
 
     private void Awake()
     {
@@ -190,7 +209,7 @@ public class BattleManager : Singleton<BattleManager>
         mFlowFunc = TimeFlowFunc;
     }
 
-    #region 대기열 관련
+#region Flow 관련
 
     // 대기 함수 
     private void TimeFlowFunc()
@@ -224,7 +243,14 @@ public class BattleManager : Singleton<BattleManager>
     private void PlayerInputFunc()
     {
         if (!Input.GetMouseButtonDown(0)) { return; }
+        if (EventSystem.current.IsPointerOverGameObject(PointerID))
+        {
+            // UI 객체면 리턴 시킨다.
+            return;
+        }
         if (mSelectWeapon == null) { return; }
+
+        EventSystem.current.IsPointerOverGameObject(0);
 
         // raycasthit 체크
         Ray ray = mMainCamera.ScreenPointToRay(Input.mousePosition);
@@ -238,18 +264,17 @@ public class BattleManager : Singleton<BattleManager>
         if(mSelectSlot != null && mSelectSlot == hitSlot)
         {
             ResetFieldSlotState();
-            mWeaponSelectUI.gameObject.SetActive(false);
+            mWeaponSelectUI.DisableWeaponSelectUI();
 
             // 공격 진행 플로우로 진행
             mFlowFunc = AttackFlowFunc;
             return;
         }
-
-        mSelectSlot = hitSlot;
-
+        
         bool bContain = mTargetFieldSlotList.Contains(hitSlot);
         if (bContain == false) { return; }
-             
+
+        mSelectSlot = hitSlot;
 
         // 공격 리스트에 해당하는 몬스터 빨간색 표시
         foreach (FieldSlot slot in mAttackFieldSlotList)
@@ -274,15 +299,20 @@ public class BattleManager : Singleton<BattleManager>
 
     private void AttackFlowFunc()
     {
+        mAttackFieldSlotList = (from slot in mAttackFieldSlotList
+                               orderby slot.FieldCoordi.y ascending
+                               orderby slot.FieldCoordi.x ascending
+                                select slot).ToList();
+
         // mAttackFieldSlotList에 Hit를 진행 한다.
-        foreach(FieldSlot slot in mAttackFieldSlotList)
+        foreach(var slot in mAttackFieldSlotList)
         {
             slot.HitSlot(mSelectWeapon);
         }
         mAttackFieldSlotList.Clear();
 
         mFlowFunc = null;
-        //ResumeFlowFunc();
+        ResumeFlowFunc();
     }
 
     // 대기 열에 추가 함수
@@ -291,9 +321,9 @@ public class BattleManager : Singleton<BattleManager>
         mTurnWaitLList.AddLast(timeObj);
     }
 
-    #endregion
+#endregion
 
-    #region Flow 재개 관련
+#region Flow 재개 관련
 
     public void IncreaseAniCount()
     {
@@ -319,55 +349,9 @@ public class BattleManager : Singleton<BattleManager>
         mFlowFunc = TimeFlowFunc;
     }
 
-    #endregion
+#endregion
 
-    #region 플레이어 행동 관련
-
-    public void OnWeaponSelectUI()
-    {
-        // 무기 선택 UI 켜기
-        if (mWeaponSelectUI == null) { return; }
-        mWeaponSelectUI.InitWeaponSelectUI(mPlayer);
-
-        mSelectWeapon = null;
-        mSelectSlot = null;
-
-        // 유저 입력 켜기
-        mFlowFunc = PlayerInputFunc;
-    }
-
-    public void SelectWeaponByUI(Weapon weapon)
-    {
-        if (mSelectWeapon == weapon) { return; }
-
-        // 공격 가능 슬롯 초기화
-        mTargetFieldSlotList.Clear();
-        ResetFieldSlotState();
-
-        // Weapon의 정보 대로 값을 보여준다.
-        mSelectWeapon = weapon;
-        mSelectSlot = null;
-
-        // 선택 가능한 slotList 만들기
-        var list = mSelectWeapon.CurWeaponData.TargetCoordiList;
-        foreach (var coordi in list)
-        {
-            AddTargetList(coordi);
-        }
-
-        // 중복제거 (Linq)
-        mTargetFieldSlotList = mTargetFieldSlotList.Distinct().ToList();
-
-        // 슬롯 상태 변경 (Select 가능하게)
-        foreach (var slot in mTargetFieldSlotList)
-        {
-            slot.ChangeSlotState_PossibleSelect();
-        }
-    }
-    
-    #endregion
-
-    #region FieldSlot관련
+#region FieldSlot관련
 
     private void ResetFieldSlotState()
     {
@@ -786,7 +770,53 @@ public class BattleManager : Singleton<BattleManager>
         mAttackFieldSlotList.AddRange(list);
     }
 
-    #endregion
+#endregion
+
+#region 플레이어 행동 관련
+
+    public void OnWeaponSelectUI()
+    {
+        // 무기 선택 UI 켜기
+        if (mWeaponSelectUI == null) { return; }
+        mWeaponSelectUI.InitWeaponSelectUI(mPlayer);
+
+        mSelectWeapon = null;
+        mSelectSlot = null;
+
+        // 유저 입력 켜기
+        mFlowFunc = PlayerInputFunc;
+    }
+
+    public void SelectWeaponByUI(Weapon weapon)
+    {
+        if (mSelectWeapon == weapon) { return; }
+
+        // 공격 가능 슬롯 초기화
+        mTargetFieldSlotList.Clear();
+        ResetFieldSlotState();
+
+        // Weapon의 정보 대로 값을 보여준다.
+        mSelectWeapon = weapon;
+        mSelectSlot = null;
+
+        // 선택 가능한 slotList 만들기
+        var list = mSelectWeapon.CurWeaponData.TargetCoordiList;
+        foreach (var coordi in list)
+        {
+            AddTargetList(coordi);
+        }
+
+        // 중복제거 (Linq)
+        mTargetFieldSlotList = mTargetFieldSlotList.Distinct().ToList();
+
+        // 슬롯 상태 변경 (Select 가능하게)
+        foreach (var slot in mTargetFieldSlotList)
+        {
+            slot.ChangeSlotState_PossibleSelect();
+        }
+    }
+    
+#endregion
 
     // 옵저버 함수
     public void ExcuteAddTimeLineObjectLList(Notification noti)

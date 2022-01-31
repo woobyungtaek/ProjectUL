@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 22-01-29 : NotificaitonArgs를 ObjectPool로 반환하는 코드 삽입 > 테스트 필요
+
 public class ObserverCenter : MonoBehaviour
 {
     #region Singleton
@@ -47,7 +49,7 @@ public class ObserverCenter : MonoBehaviour
     #endregion
 
     #region Member
-    private Dictionary<string, List<Observer>>       mMessageObserver   = new Dictionary<string, List<Observer>>();
+    private Dictionary<string, List<Observer>>      mMessageObserver   = new Dictionary<string, List<Observer>>();
     private Dictionary<Component, List<Observer>>   mSenderObserver    = new Dictionary<Component, List<Observer>>();
     #endregion
 
@@ -196,6 +198,12 @@ public class ObserverCenter : MonoBehaviour
             {
                 observerList[index]._SubMethod(obInfo);
             }
+        }
+
+        // Notification의 원형 이름을 알아야 하는데...
+        if(obInfo.Data != null)
+        {
+            ObjectPool.ReturnInstByStr(obInfo.Data.GetType().Name, obInfo.Data);
         }
 
         Notification.Destroy(obInfo);

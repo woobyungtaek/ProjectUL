@@ -28,14 +28,14 @@ public class FieldSlot : MonoBehaviour
 
     #region 인접 슬롯 얻기
 
-    public FieldSlot Up         { get => mNearSlot[0]; }
-    public FieldSlot RightUp    { get => mNearSlot[1]; }
-    public FieldSlot Right      { get => mNearSlot[2]; }
-    public FieldSlot RightDown  { get => mNearSlot[3]; }
-    public FieldSlot Down       { get => mNearSlot[4]; }
-    public FieldSlot LeftDown   { get => mNearSlot[5]; }
-    public FieldSlot Left       { get => mNearSlot[6]; }
-    public FieldSlot LeftUp     { get => mNearSlot[7]; }
+    public FieldSlot Up { get => mNearSlot[0]; }
+    public FieldSlot RightUp { get => mNearSlot[1]; }
+    public FieldSlot Right { get => mNearSlot[2]; }
+    public FieldSlot RightDown { get => mNearSlot[3]; }
+    public FieldSlot Down { get => mNearSlot[4]; }
+    public FieldSlot LeftDown { get => mNearSlot[5]; }
+    public FieldSlot Left { get => mNearSlot[6]; }
+    public FieldSlot LeftUp { get => mNearSlot[7]; }
 
     #endregion
 
@@ -53,7 +53,10 @@ public class FieldSlot : MonoBehaviour
     public IFieldObject CurrentFieldObj
     {
         get { return mCurrentFieldObj; }
-        set { mCurrentFieldObj = value; }
+        set
+        {
+            mCurrentFieldObj = value;
+        }
     }
 
 
@@ -72,6 +75,12 @@ public class FieldSlot : MonoBehaviour
         transform.localPosition = new Vector3(coordi.x * 2.5f, 0, coordi.y * 4.5f);
     }
 
+    public void RemoveFieldObject()
+    {
+        mCurrentFieldObj.RemoveObject();
+        mCurrentFieldObj = null;
+    }
+
     public void SelectSlot(Vector2Int coordi)
     {
         if (mFieldCoordi != coordi)
@@ -85,12 +94,12 @@ public class FieldSlot : MonoBehaviour
         mSlotImg.color = Color.red;
     }
 
-    
+
     public void HitSlot(Weapon weapon)
     {
-        if(mCurrentFieldObj != null)
+        if (mCurrentFieldObj != null)
         {
-            mCurrentFieldObj.Hit(weapon.CurWeaponData.Power,Vector3.zero);
+            mCurrentFieldObj.Hit(weapon.CurWeaponData.Power, Vector3.zero);
         }
     }
 

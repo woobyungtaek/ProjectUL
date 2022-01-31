@@ -1,20 +1,27 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
-public static class ObjectPool<T> where T : class, IReUseObject, new()
+// 22-01-29 : string, object 형태의 풀로 변경, 문자열로 반환 기능 추가
+public static class ObjectPool
 {
-    static Queue<T> tQueue = new Queue<T>();
-    static T inst = null;
+    static Dictionary<string, Queue<object>> tQueueDict = new Dictionary<string, Queue<object>>();
 
-    public static T GetInst()
+    public static T GetInst<T>() where T : class, IReUseObject, new()
     {
-        inst = null;
-        while(tQueue.Count > 0)
+        T inst = null;
+
+        string key = typeof(T).Name;
+       if ( tQueueDict.ContainsKey(key) == false)
         {
-            inst = tQueue.Dequeue();
+            tQueueDict.Add(key, new Queue<object>());
+        }
+
+        while(tQueueDict[key].Count > 0)
+        {
+            inst = tQueueDict[key].Dequeue() as T;
             if (inst != null)
             {
                 break;
@@ -25,15 +32,47 @@ public static class ObjectPool<T> where T : class, IReUseObject, new()
             inst = new T();
         }
         inst.ResetObject();
+
+#if UNITY_EDITOR
+        Debug.Log($"{key} pool : {tQueueDict[key].Count}");
+#endif
+
         return inst;
     }
-    public static void ReturnInst(T inst)
+    public static void ReturnInst<T>(T inst) where T : class, IReUseObject, new()
     {
-        tQueue.Enqueue(inst);
+        string key = typeof(T).Name;
+        if (tQueueDict.ContainsKey(key) == false)
+        {
+            //Disposble 필요?
+            return;
+        }
+        tQueueDict[key].Enqueue(inst);
+#if UNITY_EDITOR
+        Debug.Log($"{key} pool : {tQueueDict[key].Count}");
+#endif
     }
-    public static void ClearPool()
+    public static void ReturnInstByStr(string key, object inst)
     {
-        tQueue.Clear();
+        if (tQueueDict.ContainsKey(key) == false)
+        {
+            //Disposble 필요?
+            return;
+        }
+        tQueueDict[key].Enqueue(inst);
+#if UNITY_EDITOR
+        Debug.Log($"{key} pool : {tQueueDict[key].Count}");
+#endif
+    }
+    public static void ClearPool<T>() where T : class, IReUseObject, new()
+    {
+        string key = typeof(T).Name;
+        if (tQueueDict.ContainsKey(key) == false)
+        {
+            return;
+        }
+        //이전에 Disposble필요?
+        tQueueDict[key].Clear();
     }
 }
 public interface IReUseObject

@@ -8,7 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TimeLineObjNotiArg : NotificationArgs //, IReUseObject
+public class TimeLineObjNotiArg : NotificationArgs, IReUseObject
 {
     public string slotStr;
     public TimeLineObject timelineObj;
@@ -39,9 +39,11 @@ public abstract class TimeLineObject
 
     public void InitTimeLineObject(string str)
     {
-        TimeLineObjNotiArg args = new TimeLineObjNotiArg();//ObjectPool<TimeLineObjNotiArg>.GetInst();
+        TimeLineObjNotiArg args = ObjectPool.GetInst<TimeLineObjNotiArg>();
         args.slotStr = str;
         args.timelineObj = this;
+
+        mCurrentTime = 0;
 
         // TimeLineUI에 전달되어야하는 Message발생
         ObserverCenter.Instance.SendNotification(Message.CreateTimeLineObject, args);

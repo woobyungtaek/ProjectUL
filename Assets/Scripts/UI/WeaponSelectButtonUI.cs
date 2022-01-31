@@ -11,6 +11,7 @@ public class WeaponSelectButtonUI : MonoBehaviour
     [SerializeField]
     private Text mButtonText;
 
+
     public void InitButtonUI(Weapon weapon)
     {
         mCurrentWeapon = weapon;

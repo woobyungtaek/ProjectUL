@@ -74,9 +74,9 @@ public class TimeLineBarUI : MonoBehaviour
             return;
         }
 
-        foreach(TimeLineThumbNailUI ui in mThumbNailLList)
+        foreach (TimeLineThumbNailUI ui in mThumbNailLList)
         {
-            if(ui.TimeLineObj == args.timelineObj)
+            if (ui.TimeLineObj == args.timelineObj)
             {
                 // ui 초기화 및 풀로 반환
                 ui.TimeLineObj = null;

@@ -9,7 +9,6 @@ using ExtensionMethod;
 public class Enemy : TimeLineObject, IFieldObject
 {
     private int mHP;
-    private bool mbMove = true;
 
     public FieldGameObject CurrentFieldGameObject { get; set; }
 
@@ -41,6 +40,10 @@ public class Enemy : TimeLineObject, IFieldObject
         // 필드 이펙트가 실행되면, Effect종류와 파워값이 들어온다.
         // Enemy의 종류에 따라 적용되면 된다.
     }
+    public virtual void RemoveObject()
+    {
+        Debug.LogError("반드시 오버라이드 후 사용하세요.");
+    }
 
     public override void TurnActionFunc()
     {
@@ -49,4 +52,9 @@ public class Enemy : TimeLineObject, IFieldObject
         // Enemy를 상속받은 실제 class가 재정의한 함수를 실행
         // 행동을 선택하는 방식이 다다르기 때문에 각각이 정의해서 사용한다.
     }
+
+    public void ResetObject()
+    {
+    }
+
 }

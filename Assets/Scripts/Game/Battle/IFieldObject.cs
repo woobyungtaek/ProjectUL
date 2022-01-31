@@ -20,7 +20,16 @@ namespace ExtensionMethod
             // FieldObject는 mySlot위치에 AniObject를 생성시켜야한다.
             fieldObject.CurrentFieldGameObject = GameObjectPool.Instantiate<FieldGameObject>(BattleManager.Instance.FieldGameObjPrefab, slot.transform.parent);
             fieldObject.CurrentFieldGameObject.gameObject.transform.position = slot.gameObject.transform.position;
-            fieldObject.CurrentFieldGameObject.PlayAnimationByAniState(EAniState.CreateAni);
+            fieldObject.CurrentFieldGameObject.PlayAnimationByAniState(EAniState.CreateAni, false);
+        }
+
+        // 필드 오브젝트 (적) 지우기
+        public static void RemoveFieldGameObject(this IFieldObject fieldobject)
+        {
+            if(fieldobject.CurrentFieldGameObject != null)
+            {
+                GameObjectPool.Destroy(fieldobject.CurrentFieldGameObject.gameObject);
+            }
         }
 
         // 필드오브젝트 피격
@@ -29,10 +38,11 @@ namespace ExtensionMethod
             Debug.Log("ExtentionHit");
             fieldObject.CurrentFieldGameObject.PlayAnimationByAniState(EAniState.HitAni);
         }
+                
     }
 }
 
-public interface IFieldObject
+public interface IFieldObject : IReUseObject
 {
     // 반드시 있어야할 객체를 getset으로 구현
     FieldGameObject CurrentFieldGameObject { get; set; }
@@ -43,4 +53,6 @@ public interface IFieldObject
     // Field State 영향 받기 함수
     // 객체 별로 어떤것에 영향 받을지 구현 가능
     void ApplyFieldEffect();
+
+    void RemoveObject();
 }

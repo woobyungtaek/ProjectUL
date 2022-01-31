@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ExtensionMethod;
 
 // Enemy를 상속받는 애들 
 
@@ -12,6 +13,11 @@ public class Scarecrow : Enemy
 
     public override void ApplyFieldEffect()
     {
+    }
+    public override void RemoveObject()
+    {
+        this.RemoveFieldGameObject();
+        ObjectPool.ReturnInst<Scarecrow>(this);
     }
 
     public override void TurnActionFunc()
